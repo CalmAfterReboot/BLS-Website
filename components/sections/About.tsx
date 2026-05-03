@@ -52,7 +52,7 @@ export function About() {
     <section
       id="about"
       ref={ref}
-      className="scroll-mt-24 px-[clamp(1rem,5vw,3rem)] py-[clamp(3rem,8vw,7rem)]"
+      className="scroll-mt-24 px-[clamp(1rem,5vw,3rem)] pb-[clamp(3rem,8vw,7rem)] pt-[clamp(0rem,calc(8vw_-_6.25rem),0.75rem)]"
     >
       <SectionHeader index="01" title="ABOUT" />
 
