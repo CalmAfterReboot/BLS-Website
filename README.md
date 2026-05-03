@@ -2,6 +2,8 @@
 
 Production portfolio for **Mihai** / **Blue Layer Systems** — a cyberpunk HUD–style marketing site built with **Next.js 14 (App Router)** and deployed to **Vercel** (`bluelayersystems.com`).
 
+**Repository:** [github.com/CalmAfterReboot/bls-portfolio](https://github.com/CalmAfterReboot/bls-portfolio)
+
 This README is a **map of the codebase**: where things live, what they do, and how they connect.
 
 ---
