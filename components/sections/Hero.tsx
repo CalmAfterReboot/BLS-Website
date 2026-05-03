@@ -82,7 +82,7 @@ export function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative isolate min-h-[100svh] overflow-hidden pt-6"
+      className="relative isolate min-h-[100svh] overflow-hidden pt-24 md:pt-28"
     >
       <div
         className={[styles.heroGrid, "pointer-events-none absolute inset-0 -z-10"].join(" ")}
