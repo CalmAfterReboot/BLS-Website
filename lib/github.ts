@@ -16,6 +16,7 @@ export const PINNED_REPOS_ORDER = [
   "bls-policy-governance",
   "bls-ai-gateway",
   "homelab-infrastructure",
+  "BLS-Website",
 ] as const;
 
 export const WATCHED_REPOS = [...PINNED_REPOS_ORDER];
@@ -27,42 +28,42 @@ export const BLS_META: Record<
   "BLS-Website": {
     phase: "PORTFOLIO",
     description:
-      "Production portfolio site for Blue Layer Systems — built with Next.js 14, TypeScript, Tailwind CSS, and a Groq-powered AI assistant. Deployed to Vercel at bluelayersystems.com.",
+      "Production portfolio site for Blue Layer Systems. Built with Next.js 14, TypeScript, Tailwind CSS, Framer Motion, and a Groq-powered AI assistant. Live at bluelayersystems.com.",
   },
   "bls-azure-landing-zone": {
     phase: "PROJECT 01",
     description:
-      "Enterprise landing zone patterns: subscriptions, management groups, policy baselines, and network guardrails for Azure estates.",
+      "Azure Landing Zone built with Terraform. Hub-spoke VNet topology, Azure Policy as code, remote state in Azure Storage, Checkov security scanning, Infracost cost estimation, and GitHub Actions CI/CD pipeline with plan/apply workflow.",
   },
   "bls-aks-platform": {
     phase: "PROJECT 02",
     description:
-      "Kubernetes platform on AKS: workload identity, ingress, cluster lifecycle, and hardened node pools for production services.",
+      "Production AKS cluster deployed via Terraform. GitOps with ArgoCD, Helm chart management, horizontal pod autoscaling, KEDA event-driven scaling, and namespace isolation. Mirrors k3s homelab setup.",
   },
   "bls-cicd-pipeline": {
     phase: "PROJECT 03",
     description:
-      "CI/CD rails with GitHub Actions and GitOps hooks—build, scan, promote, and trace releases end to end.",
+      "Reusable GitHub Actions pipeline library for infrastructure delivery. Terraform plan/apply, Checkov policy enforcement, Infracost delta comments on PRs, and automated drift detection.",
   },
   "bls-observability-stack": {
     phase: "PROJECT 04",
     description:
-      "Metrics, logs, and SLO-oriented dashboards wired for platform teams and incident response.",
+      "Full observability platform using Prometheus, Grafana, and Loki. PromQL dashboards for infrastructure KPIs, alerting rules, SLI/SLO definitions, and incident response runbooks.",
   },
   "bls-policy-governance": {
     phase: "PROJECT 05",
     description:
-      "Policy-as-code, guardrails, and compliance automation across cloud control planes.",
+      "Policy and compliance as code. OPA/Rego policies enforced at pipeline level, Azure Policy definitions for cloud guardrails, and automated compliance reporting across the BLS platform.",
   },
   "bls-ai-gateway": {
     phase: "PROJECT 06",
     description:
-      "Secure ingress and routing patterns for AI workloads and upstream API governance.",
+      "LLM routing gateway built with LiteLLM and FastAPI. Routes traffic across DeepSeek, Azure OpenAI, Anthropic, and Ollama on Proxmox homelab. Redis caching, PostgreSQL logging, cost tracking per model.",
   },
   "homelab-infrastructure": {
     phase: "HOMELAB",
     description:
-      "Bare-metal and virtual lab for validating Terraform modules, GitOps flows, and observability before production rollouts.",
+      "Proxmox cluster with 128GB RAM, pfSense firewall, TP-Link managed switching, VLAN segmentation across 7 networks (10/20/30/40/50/99/200), Cloudflare Tunnel, and k3s for local Kubernetes workloads.",
   },
 };
 
