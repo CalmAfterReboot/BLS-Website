@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Rajdhani, Share_Tech_Mono } from "next/font/google";
 
 import { Navbar } from "@/components/layout/Navbar";
@@ -8,6 +9,8 @@ import { ScanOverlay } from "@/components/ui/ScanOverlay";
 import { TechMarquee } from "@/components/ui/TechMarquee";
 
 import "@/styles/globals.css";
+
+const ChatWidget = dynamic(() => import("@/components/ui/ChatWidget"), { ssr: false });
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
@@ -85,6 +88,7 @@ export default function RootLayout({
           <Navbar />
           <TechMarquee />
           {children}
+          <ChatWidget />
         </AppProviders>
       </body>
     </html>
