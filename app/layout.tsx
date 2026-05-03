@@ -87,9 +87,7 @@ export default function RootLayout({
           <CustomCursor />
           <Navbar />
           <TechMarquee />
-          <main>
-            {children}
-          </main>
+          {children}
           <ChatWidget />
         </AppProviders>
       </body>
