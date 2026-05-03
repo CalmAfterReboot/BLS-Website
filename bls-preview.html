@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLUE LAYER SYSTEMS — Platform & Cloud Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── THEME TOKENS ─────────────────────────────────────────── */
+:root, [data-theme="dark"] {
+  --bg:            #07070D;
+  --bg-panel:      #0F0F1C;
+  --bg-card:       #131325;
+  --bg-card-hover: #191930;
+
+  /* Accent — green ONLY for interactive/highlight elements */
+  --accent:        #00CC6A;
+  --accent-bright: #00FF88;
+  --accent-dim:    rgba(0,204,106,0.08);
+  --accent-glow:   rgba(0,204,106,0.15);
+
+  --amber:         #E09900;
+  --amber-dim:     rgba(224,153,0,0.08);
+  --red:           #FF3355;
+
+  /* TEXT — neutral, zero green tint */
+  --text-bright:   #F0F0F0;   /* H1, hero name, section titles */
+  --text:          #B8BDB8;   /* Body copy, card descriptions */
+  --muted:         #717871;   /* Secondary info, labels, meta */
+  --dim:           #3A3F3A;   /* Decorators, separators, placeholders */
+
+  --border:        rgba(255,255,255,0.06);
+  --border-hi:     rgba(0,204,106,0.30);
+  --panel-shadow:  0 4px 24px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset;
+  --panel-shadow-hover: 0 8px 40px rgba(0,0,0,0.75), 0 0 24px rgba(0,204,106,0.10), 0 1px 0 rgba(255,255,255,0.06) inset;
+  --scan:          rgba(0,204,106,0.012);
+  --cursor-bg:     #00CC6A;
+  --nav-bg:        rgba(7,7,13,0.97);
+  --nav-shadow:    rgba(0,0,0,0.6);
+}
+
+[data-theme="light"] {
+  --bg:            #F2F0E8;
+  --bg-panel:      #E8E5DB;
+  --bg-card:       #DEDAD0;
+  --bg-card-hover: #D4D0C4;
+
+  --accent:        #1A6B34;
+  --accent-bright: #1A6B34;
+  --accent-dim:    rgba(26,107,52,0.08);
+  --accent-glow:   rgba(26,107,52,0.15);
+
+  --amber:         #A05A08;
+  --amber-dim:     rgba(160,90,8,0.07);
+  --red:           #CC1133;
+
+  /* TEXT — dark ink, zero colour tint */
+  --text-bright:   #0A0A08;   /* Headings */
+  --text:          #2A2A24;   /* Body copy */
+  --muted:         #6A6A60;   /* Secondary */
+  --dim:           #AAAAA0;   /* Decorators */
+
+  --border:        rgba(0,0,0,0.08);
+  --border-hi:     rgba(26,107,52,0.35);
+  --panel-shadow:  0 4px 20px rgba(0,0,0,0.09), 0 1px 0 rgba(255,255,255,0.85) inset;
+  --panel-shadow-hover: 0 8px 32px rgba(0,0,0,0.16), 0 1px 0 rgba(255,255,255,0.9) inset;
+  --scan:          rgba(26,107,52,0.012);
+  --cursor-bg:     #1A6B34;
+  --nav-bg:        rgba(235,233,222,0.97);
+  --nav-shadow:    rgba(0,0,0,0.10);
+}
+
+/* ── RESET ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ── PAGE TRANSITION OVERLAY ──────────────────────────── */
+#page-transition {
+  position: fixed; inset: 0; z-index: 99997;
+  background: var(--bg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#page-transition.active { opacity: 1; pointer-events: all; }
+::selection { background: var(--accent-dim); color: var(--accent); }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-hi); }
+a { text-decoration: none; color: inherit; }
+
+/* ── CUSTOM CURSOR ────────────────────────────────────────── */
+#cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--cursor-bg);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+#cursor-ring {
+  position: fixed;
+  width: 32px; height: 32px;
+  border: 1px solid var(--border-hi);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.2s;
+}
+body.cursor-hover #cursor-dot { width: 4px; height: 4px; }
+body.cursor-hover #cursor-ring { width: 48px; height: 48px; border-color: var(--accent); }
+
+/* ── SCAN LINES ───────────────────────────────────────────── */
+.scanlines {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9990;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--scan) 2px, var(--scan) 4px);
+}
+.scan-beam {
+  position: fixed; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-dim), transparent);
+  pointer-events: none; z-index: 9989;
+  animation: scanBeam 8s linear infinite;
+  opacity: 0.5;
+}
+@keyframes scanBeam { 0% { top: -2px; } 100% { top: 100vh; } }
+
+/* ── NAVBAR ───────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2.5rem;
+  /* Always visible — solid background from the start */
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border-hi);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 20px var(--nav-shadow);
+}
+[data-theme="dark"] {
+  --nav-bg: rgba(7,7,13,0.97);
+  --nav-shadow: rgba(0,0,0,0.6);
+}
+[data-theme="light"] {
+  --nav-bg: rgba(235,233,222,0.97);
+  --nav-shadow: rgba(0,0,0,0.12);
+}
+nav.scrolled {
+  box-shadow: 0 4px 30px var(--nav-shadow);
+  border-color: var(--border-hi);
+}
+
+.nav-logo {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  text-transform: uppercase;
+  flex-shrink: 0;
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+.nav-logo span { color: var(--muted); }
+
+/* Desktop links */
+.nav-links {
+  display: flex; align-items: center; gap: 2rem;
+}
+.nav-links a {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text);
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 1px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.theme-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--border-hi);
+  padding: 6px 14px;
+  cursor: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+  white-space: nowrap;
+}
+.theme-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+/* ── HAMBURGER ────────────────────────────────────────────── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px; height: 36px;
+  background: var(--accent-dim);
+  border: 1px solid var(--border-hi);
+  cursor: none;
+  padding: 8px;
+  flex-shrink: 0;
+}
+.hamburger span {
+  display: block;
+  width: 18px; height: 1.5px;
+  background: var(--accent);
+  transition: transform 0.25s ease, opacity 0.25s ease, width 0.25s ease;
+  transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ── MOBILE DRAWER ────────────────────────────────────────── */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 60px; left: 0; right: 0;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border-hi);
+  backdrop-filter: blur(16px);
+  z-index: 999;
+  padding: 1.5rem 2rem;
+  flex-direction: column;
+  gap: 0;
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  pointer-events: none;
+  box-shadow: 0 8px 32px var(--nav-shadow);
+}
+.mobile-menu.open {
+  display: flex;
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+.mobile-menu a {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text);
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.75rem;
+  transition: color 0.2s;
+}
+.mobile-menu a::before { content: '>'; color: var(--accent); font-size: 0.6rem; }
+.mobile-menu a:hover { color: var(--accent); }
+.mobile-menu a:last-of-type { border-bottom: none; }
+.mobile-theme-btn {
+  margin-top: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--border-hi);
+  padding: 10px 16px;
+  cursor: none;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+}
+.mobile-theme-btn:hover { background: var(--accent); color: var(--bg); }
+
+/* ── HERO ─────────────────────────────────────────────────── */
+#hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 7rem 3rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+.grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.5;
+}
+.hero-sys-bar {
+  display: flex; align-items: center; gap: 1.5rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 4rem;
+  opacity: 0;
+  animation: bootIn 0.6s ease 0.2s forwards;
+}
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+  display: inline-block;
+}
+.status-dot.amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.hero-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: bootIn 0.6s ease 0.35s forwards;
+}
+.hero-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: clamp(4rem, 10vw, 9rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: bootIn 0.7s ease 0.5s forwards;
+  position: relative;
+  /* Subtle text shadow for depth instead of harsh glow */
+  text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+}
+.hero-name .accent-word {
+  color: var(--accent);
+  /* Restrained glow — readable not blinding */
+  text-shadow: 0 0 40px rgba(0,204,106,0.3), 0 2px 20px rgba(0,0,0,0.6);
+}
+.hero-typed {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--accent);
+  margin-bottom: 2rem;
+  min-height: 2rem;
+  opacity: 0;
+  animation: bootIn 0.6s ease 0.7s forwards;
+}
+.cursor-blink {
+  display: inline-block;
+  width: 2px; height: 1.2em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.hero-desc {
+  max-width: 500px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: bootIn 0.6s ease 0.85s forwards;
+}
+.hero-desc strong { color: var(--accent); font-weight: 600; }
+
+.hero-ctas {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  opacity: 0;
+  animation: bootIn 0.6s ease 1s forwards;
+}
+.btn-primary {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.85rem 2.5rem;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: transparent;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: color 0.2s;
+}
+.btn-primary::before {
+  content:''; position: absolute; inset: 0;
+  background: var(--accent);
+  transform: translateX(-101%);
+  transition: transform 0.25s ease;
+}
+.btn-primary:hover::before { transform: translateX(0); }
+.btn-primary:hover { color: var(--bg); }
+.btn-primary span { position: relative; z-index: 1; }
+.btn-secondary {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.85rem 2.5rem;
+  border: 1px solid var(--border-hi);
+  color: var(--muted);
+  background: transparent;
+  cursor: none;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: color 0.2s, border-color 0.2s;
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--accent); }
+
+/* Live commit widget */
+.hero-commit {
+  margin-top: 3rem;
+  opacity: 0;
+  animation: bootIn 0.6s ease 1.2s forwards;
+}
+.hud-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  position: relative;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  box-shadow: var(--panel-shadow);
+}
+.hud-panel:hover {
+  border-color: var(--border-hi);
+  box-shadow: var(--panel-shadow-hover);
+  background: var(--bg-card-hover);
+}
+.hud-panel::after {
+  content: '';
+  position: absolute; bottom: 0; right: 0;
+  width: 14px; height: 1px;
+  background: var(--accent);
+  transform: rotate(-45deg) translate(5px, -5px);
+  transform-origin: right;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.hud-panel:hover::after { opacity: 1; }
+/* ── TYPOGRAPHY HIERARCHY ─────────────────────────────────── */
+/* Rule: accent = interactive/highlight only. Body = neutral greys. */
+
+.panel-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);          /* muted grey label */
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.5rem;
+  background: rgba(0,0,0,0.15);
+}
+
+/* About bio body copy */
+.about-bio p {
+  color: var(--text);           /* neutral off-white, not green */
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+.about-bio p strong {
+  color: var(--text-bright);    /* bright white for emphasis */
+  font-weight: 600;
+}
+.about-bio .open-badge {
+  display: inline-flex; align-items: center; gap: 0.6rem; margin-top: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--border-hi); padding: 5px 12px;
+  background: var(--accent-dim);
+}
+
+/* Timeline */
+.tl-role  { font-weight: 600; font-size: 0.95rem; color: var(--text-bright); }
+.tl-co    { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; color: var(--accent); margin: 3px 0 5px; }
+.tl-desc  { font-size: 0.82rem; color: var(--text); line-height: 1.6; }  /* text not muted */
+
+/* Stat labels */
+.stat-label { font-family: 'Share Tech Mono', monospace; font-size: 0.56rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+
+/* Section header */
+.section-index { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--accent); letter-spacing: 0.2em; }
+.section-title {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-bright);    /* always bright white heading */
+}
+.section-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-hi), transparent); }
+
+/* Project cards */
+.project-phase { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 0.2em; color: var(--amber); text-transform: uppercase; margin-bottom: 0.6rem; }
+.project-name  { font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; color: var(--accent); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
+.project-desc  { font-size: 0.88rem; color: var(--text); line-height: 1.75; flex: 1; margin-bottom: 1rem; }  /* text not muted */
+.project-lang  { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; }
+.project-link  { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
+.project-link:hover { color: var(--accent); }
+.project-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+
+/* Tags */
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border: 1px solid var(--border); color: var(--muted);
+  transition: border-color 0.2s, color 0.2s;
+}
+.tag:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Skills */
+.skill-group-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.skill-group-label::after { content:''; flex:1; height:1px; background: var(--border); }
+.skill-name { font-size: 0.88rem; color: var(--text); font-weight: 500; }
+.skill-pct  { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: var(--accent); }
+
+/* Cert cards */
+.cert-name { font-size: 0.78rem; color: var(--text); margin-bottom: 0.6rem; line-height: 1.4; }
+
+/* Contact nodes */
+.cn-label { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.cn-val   { font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; color: var(--accent); transition: opacity 0.2s; }
+.cn-val:hover { opacity: 0.75; }
+
+/* Contact CTA body text */
+.cta-block p { color: var(--text); font-size: 0.98rem; line-height: 1.75; margin-bottom: 1.5rem; }
+
+/* Hero desc */
+.hero-desc {
+  max-width: 520px;
+  color: var(--text);           /* neutral, readable */
+  font-size: 1.05rem;
+  line-height: 1.75;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: bootIn 0.6s ease 0.85s forwards;
+}
+.hero-desc strong { color: var(--accent); font-weight: 600; }
+
+/* Ticker items */
+.ticker-item { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; white-space: nowrap; padding: 0 2.5rem; color: var(--muted); display: flex; align-items: center; gap: 0.75rem; }
+.ticker-item .dot { color: var(--accent); font-size: 0.5rem; }
+
+/* Footer */
+.footer-logo { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; color: var(--accent); }
+.footer-copy { font-family: 'Share Tech Mono', monospace; font-size: 0.56rem; letter-spacing: 0.15em; color: var(--muted); }
+
+/* ── TICKER ───────────────────────────────────────────────── */
+.ticker-wrap {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  padding: 0.9rem 0;
+  background: var(--bg-panel);
+}
+.ticker {
+  display: flex; width: max-content;
+  animation: ticker 30s linear infinite;
+}
+.ticker:hover { animation-play-state: paused; }
+.ticker-item {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0 2.5rem;
+  color: var(--muted);
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.ticker-item .dot { color: var(--accent); font-size: 0.5rem; }
+@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+/* ── SECTIONS ─────────────────────────────────────────────── */
+section { padding: 7rem 3rem; }
+.section-inner { max-width: 1180px; margin: 0 auto; }
+.section-header {
+  display: flex; align-items: center; gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+.section-index {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+}
+.section-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+}
+.section-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border-hi), transparent);
+}
+
+/* reveal animation */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+.reveal-delay-5 { transition-delay: 0.40s; }
+.reveal-delay-6 { transition-delay: 0.48s; }
+
+/* ── ABOUT ────────────────────────────────────────────────── */
+#about { background: var(--bg); }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.about-bio { padding: 1.8rem; }
+.about-bio p { color: var(--muted); margin-bottom: 1rem; font-size: 1rem; line-height: 1.8; }
+.about-bio p strong { color: var(--text-bright); font-weight: 600; }
+.about-bio .open-badge {
+  display: inline-flex; align-items: center; gap: 0.6rem; margin-top: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--border-hi); padding: 5px 12px;
+  background: var(--accent-dim);
+}
+
+/* ── SECTION FADE TRANSITION ──────────────────────────── */
+section {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+section.section-entering {
+  animation: sectionFadeIn 0.6s ease forwards;
+}
+@keyframes sectionFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.stat-card { padding: 1.5rem 1rem; text-align: center; }
+.stat-val { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2.2rem; color: var(--accent); line-height: 1; margin-bottom: 0.3rem; text-shadow: 0 0 20px var(--accent-glow); }
+.stat-label { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+.timeline { margin-top: 1rem; }
+.timeline-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+.timeline-item:last-child { border-bottom: none; }
+.tl-dot { margin-top: 5px; flex-shrink: 0; }
+.tl-role { font-weight: 600; font-size: 0.9rem; color: var(--text-bright); }
+.tl-co { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--accent); margin: 2px 0 4px; }
+.tl-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+/* ── PROJECTS ─────────────────────────────────────────────── */
+#projects { background: var(--bg-panel); }
+.projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.project-card { padding: 0; display: flex; flex-direction: column; box-shadow: var(--panel-shadow); }
+.project-card:hover { border-color: var(--border-hi); box-shadow: var(--panel-shadow-hover); background: var(--bg-card-hover); }
+.project-card-inner { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; }
+.project-phase { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 0.2em; color: var(--amber); text-transform: uppercase; margin-bottom: 0.6rem; }
+.project-name { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--accent); margin-bottom: 0.75rem; }
+.project-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; flex: 1; margin-bottom: 1rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border: 1px solid var(--border); color: var(--muted);
+  transition: border-color 0.2s, color 0.2s;
+}
+.tag:hover { border-color: var(--accent); color: var(--accent); }
+.project-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.project-lang { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; }
+.project-link { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
+.project-link:hover { color: var(--accent); }
+
+/* ── SKILLS ───────────────────────────────────────────────── */
+#skills { background: var(--bg); }
+.skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+.skill-group { padding: 1.5rem; }
+.skill-group-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.skill-group-label::after { content:''; flex:1; height:1px; background: var(--border); }
+.skill-row { margin-bottom: 1rem; }
+.skill-row-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.skill-name { font-size: 0.85rem; color: var(--text); font-weight: 500; }
+.skill-pct { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--accent); }
+.skill-bar { height: 2px; background: var(--border); position: relative; overflow: hidden; }
+.skill-fill {
+  height: 100%; background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  width: 0; transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.skill-fill::after {
+  content:''; position: absolute; right:0; top:-3px;
+  width:4px; height:8px; background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+.skill-bar.animated .skill-fill { width: var(--target-width); }
+
+/* Certs */
+.certs-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 1.5rem; }
+.cert-card { padding: 1.2rem; border: 1px solid var(--border); transition: border-color 0.2s; }
+.cert-card:hover { border-color: var(--border-hi); }
+.cert-code { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.5rem; color: var(--accent); margin-bottom: 0.25rem; }
+.cert-code.amber { color: var(--amber); }
+.cert-name { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.6rem; line-height: 1.4; }
+.cert-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border: 1px solid;
+  display: inline-block;
+}
+.cert-badge.active { border-color: var(--border-hi); color: var(--accent); }
+.cert-badge.progress { border-color: rgba(255,170,0,0.4); color: var(--amber); }
+
+/* ── CONTACT ──────────────────────────────────────────────── */
+#contact { background: var(--bg-panel); }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.contact-node { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 0; border-bottom: 1px solid var(--border); }
+.contact-node:last-child { border-bottom: none; }
+.cn-label { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.cn-val { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent); transition: opacity 0.2s; }
+.cn-val:hover { opacity: 0.7; }
+.cta-block { padding: 2rem; }
+.cta-block p { color: var(--muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.5rem; }
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 3rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-logo { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.25em; color: var(--accent); }
+.footer-copy { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; color: var(--muted); }
+
+/* ── ANIMATIONS ───────────────────────────────────────────── */
+@keyframes bootIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* parallax container */
+.parallax-text { will-change: transform; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+
+/* Fluid section padding */
+section { padding: clamp(3rem, 8vw, 7rem) clamp(1rem, 5vw, 3rem); }
+#hero    { padding: clamp(5rem, 10vw, 7rem) clamp(1rem, 5vw, 3rem) clamp(2rem, 4vw, 4rem); }
+
+/* Fluid type scale */
+.hero-name   { font-size: clamp(3.5rem, 12vw, 9rem); }
+.section-title { font-size: clamp(1.4rem, 4vw, 2.2rem); }
+.stat-val    { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+
+/* ── TABLET (≤ 1024px) ── */
+@media (max-width: 1024px) {
+  nav { padding: 0 1.5rem; }
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+  .certs-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── MOBILE LANDSCAPE / SMALL TABLET (≤ 768px) ── */
+@media (max-width: 768px) {
+  /* Show hamburger, hide desktop links */
+  .hamburger { display: flex; }
+  .nav-links  { display: none; }
+
+  nav { padding: 0 1.25rem; height: 56px; }
+
+  .about-grid   { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .skills-grid  { grid-template-columns: 1fr; }
+
+  .hero-sys-bar { flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
+  .hero-sys-bar span:nth-child(6) { display: none; }
+
+  .hero-ctas { flex-direction: column; align-items: flex-start; }
+  .btn-primary, .btn-secondary { width: 100%; max-width: 280px; text-align: center; }
+
+  footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
+}
+
+/* ── MOBILE PORTRAIT (≤ 480px) ── */
+@media (max-width: 480px) {
+  nav { padding: 0 1rem; }
+
+  .projects-grid { grid-template-columns: 1fr; }
+  .certs-row     { grid-template-columns: 1fr 1fr; }
+  .stats-grid    { grid-template-columns: 1fr 1fr; }
+
+  .hero-commit .hud-panel { max-width: 100% !important; }
+
+  .section-header { gap: 0.75rem; }
+  .section-index  { font-size: 0.55rem; }
+
+  .panel-label { font-size: 0.5rem; padding: 0.5rem 0.75rem; }
+  .about-bio   { padding: 1rem; }
+
+  .ticker-item { padding: 0 1.5rem; font-size: 0.6rem; }
+}
+
+/* ── VERY SMALL (≤ 360px) ── */
+@media (max-width: 360px) {
+  .hero-name { font-size: clamp(2.8rem, 16vw, 4rem); }
+  .certs-row { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- Page transition overlay -->
+<div id="page-transition"></div>
+
+<!-- Scan overlay -->
+<div class="scanlines" aria-hidden="true"></div>
+<div class="scan-beam" aria-hidden="true"></div>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">BLS<span>::</span>SYS</a>
+
+  <!-- Desktop links -->
+  <div class="nav-links">
+    <a href="#about">ABOUT</a>
+    <a href="#projects">PROJECTS</a>
+    <a href="#skills">SKILLS</a>
+    <a href="#contact">CONTACT</a>
+    <button class="theme-btn" id="themeToggle">◐ LIGHT</button>
+  </div>
+
+  <!-- Hamburger (mobile only) -->
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<!-- Mobile drawer -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about"    id="mob-about">ABOUT</a>
+  <a href="#projects" id="mob-projects">PROJECTS</a>
+  <a href="#skills"   id="mob-skills">SKILLS</a>
+  <a href="#contact"  id="mob-contact">CONTACT</a>
+  <button class="mobile-theme-btn" id="mobileThemeToggle">◐ SWITCH TO LIGHT MODE</button>
+</div>
+
+<!-- ── HERO ───────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <div class="hero-sys-bar">
+    <span class="status-dot"></span>
+    <span>SYS ONLINE</span>
+    <span style="color:var(--dim)">//</span>
+    <span>BLUE LAYER SYSTEMS v0.1.0</span>
+    <span style="color:var(--dim)">//</span>
+    <span>NODE: CARLISLE-UK-01</span>
+  </div>
+
+  <p class="hero-label">&gt; INITIALISING PORTFOLIO_SYSTEM...</p>
+
+  <h1 class="hero-name parallax-text">
+    <span class="accent-word">MIHAI</span>
+  </h1>
+
+  <div class="hero-typed">
+    <span id="typed-text"></span><span class="cursor-blink"></span>
+  </div>
+
+  <p class="hero-desc">
+    Building production-grade cloud infrastructure under the
+    <strong>Blue Layer Systems</strong> brand.
+    Azure · Kubernetes · Terraform · GitOps.
+  </p>
+
+  <div class="hero-ctas">
+    <a href="#projects" class="btn-primary"><span>VIEW PROJECTS</span></a>
+    <a href="#contact" class="btn-secondary">GET IN TOUCH</a>
+  </div>
+
+  <div class="hero-commit">
+    <div class="hud-panel" style="max-width:480px;">
+      <div class="panel-label">
+        <span class="status-dot" style="width:5px;height:5px;"></span>
+        LATEST COMMIT ACTIVITY
+      </div>
+      <div style="padding:0.8rem 1rem;">
+        <p style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--accent);">&gt; feat: add terraform azure landing zone scaffold</p>
+        <p style="font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--muted);margin-top:4px;">REPO: bls-azure-landing-zone · 2 hours ago</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TICKER ─────────────────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker">
+    <!-- Items injected by JS so they duplicate cleanly -->
+  </div>
+</div>
+
+<!-- ── ABOUT ──────────────────────────────────────────────── -->
+<section id="about">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-index">01</span>
+      <h2 class="section-title">ABOUT</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="about-grid">
+      <div class="reveal reveal-delay-1">
+        <div class="hud-panel about-bio">
+          <div class="panel-label"><span class="status-dot" style="width:5px;height:5px;"></span> OPERATOR PROFILE · BLS-ENG-01</div>
+          <div style="padding:1.2rem;">
+            <p>MSP infrastructure engineer in active transition to <strong>cloud and platform engineering</strong>. Three-plus years of second-to-third line delivery across Azure, Hyper-V, RDS, and network infrastructure for a diverse client base.</p>
+            <p>Currently executing a 12-week DevOps portfolio build — six production-grade projects targeting <strong>£45–65k Cloud Engineer, DevOps, or Platform Engineer</strong> roles. Homelab running Proxmox with 128GB RAM, pfSense, and VLAN-segmented networking.</p>
+            <p>Cert roadmap: <strong>Terraform Associate → AZ-400 → AZ-305</strong>. Portfolio and demonstrated engineering output take priority over cert-chasing.</p>
+            <div class="open-badge"><span class="status-dot" style="width:5px;height:5px;"></span> OPEN TO OPPORTUNITIES · UK REMOTE / HYBRID</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="stats-grid">
+          <div class="hud-panel stat-card reveal reveal-delay-2">
+            <div class="stat-val">3+</div><div class="stat-label">YRS EXPERIENCE</div>
+          </div>
+          <div class="hud-panel stat-card reveal reveal-delay-3">
+            <div class="stat-val">AZ-104</div><div class="stat-label">AZURE CERT</div>
+          </div>
+          <div class="hud-panel stat-card reveal reveal-delay-4">
+            <div class="stat-val">15+</div><div class="stat-label">INFRA TOOLS</div>
+          </div>
+          <div class="hud-panel stat-card reveal reveal-delay-5">
+            <div class="stat-val">128GB</div><div class="stat-label">HOMELAB RAM</div>
+          </div>
+        </div>
+
+        <div class="hud-panel timeline reveal reveal-delay-6" style="margin-top:1rem;">
+          <div class="panel-label"><span class="status-dot" style="width:5px;height:5px;"></span> EXPERIENCE LOG</div>
+          <div style="padding:0.8rem 1rem;">
+            <div class="timeline-item">
+              <div class="tl-dot"><span class="status-dot"></span></div>
+              <div>
+                <div class="tl-role">TechOps / MSP Engineer</div>
+                <div class="tl-co">Global4 Communications · 2022 — PRESENT</div>
+                <div class="tl-desc">Azure, Entra ID, Intune, Hyper-V, RDS/FSLogix/AVD, Exchange Online, DrayTek, Meraki.</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-dot"><span class="status-dot amber"></span></div>
+              <div>
+                <div class="tl-role">Senior IT Operations Analyst</div>
+                <div class="tl-co">Carrs Group · 2020 — 2022</div>
+                <div class="tl-desc">Multi-site AD DS, Hyper-V, Autodesk Vault, ITIL. Infrastructure ownership across retail estate.</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-dot"><span class="status-dot amber"></span></div>
+              <div>
+                <div class="tl-role">Windows 10 Deployment Engineer</div>
+                <div class="tl-co">STK (NHS Contract) · 2019 — 2020</div>
+                <div class="tl-desc">Large-scale Windows 10 rollout. SCCM, MDT, endpoint configuration at scale.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ────────────────────────────────────────────── -->
+<section id="projects">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-index">02</span>
+      <h2 class="section-title">PROJECTS</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="projects-grid" id="projects-grid">
+      <!-- Cards injected by JS -->
+    </div>
+
+    <div style="text-align:center;margin-top:2.5rem;" class="reveal">
+      <a href="https://github.com/CalmAfterReboot" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">→ VIEW ALL REPOSITORIES ON GITHUB</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── SKILLS ─────────────────────────────────────────────── -->
+<section id="skills">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-index">03</span>
+      <h2 class="section-title">SKILLS</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="skills-grid" id="skills-grid">
+      <!-- Injected by JS -->
+    </div>
+
+    <div class="certs-row" style="margin-top:2rem;">
+      <div class="cert-card reveal reveal-delay-1">
+        <div class="cert-code">AZ-104</div>
+        <div class="cert-name">Microsoft Azure Administrator</div>
+        <span class="cert-badge active">ACTIVE</span>
+      </div>
+      <div class="cert-card reveal reveal-delay-2">
+        <div class="cert-code amber">TF-ASC</div>
+        <div class="cert-name">Terraform Associate</div>
+        <span class="cert-badge progress">IN PROGRESS</span>
+      </div>
+      <div class="cert-card reveal reveal-delay-3">
+        <div class="cert-code amber">AZ-400</div>
+        <div class="cert-name">Azure DevOps Engineer Expert</div>
+        <span class="cert-badge progress">PLANNED</span>
+      </div>
+      <div class="cert-card reveal reveal-delay-4">
+        <div class="cert-code amber">AZ-305</div>
+        <div class="cert-name">Azure Solutions Architect Expert</div>
+        <span class="cert-badge progress">PLANNED</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ────────────────────────────────────────────── -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-index">04</span>
+      <h2 class="section-title">CONTACT</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="contact-grid">
+      <div>
+        <div class="hud-panel reveal reveal-delay-1">
+          <div class="panel-label"><span class="status-dot" style="width:5px;height:5px;"></span> CONTACT NODES</div>
+          <div style="padding:0.8rem 1rem;">
+            <div class="contact-node"><span class="cn-label">GITHUB</span><a href="https://github.com/CalmAfterReboot" target="_blank" class="cn-val">CalmAfterReboot</a></div>
+            <div class="contact-node"><span class="cn-label">DOMAIN</span><a href="https://bluelayersystems.com" target="_blank" class="cn-val">bluelayersystems.com</a></div>
+            <div class="contact-node"><span class="cn-label">LOCATION</span><span class="cn-val" style="color:var(--text)">Carlisle, UK</span></div>
+            <div class="contact-node"><span class="cn-label">STATUS</span><span class="open-badge" style="margin:0"><span class="status-dot" style="width:5px;height:5px;"></span>OPEN TO ROLES</span></div>
+          </div>
+        </div>
+
+        <div class="hud-panel reveal reveal-delay-2" style="margin-top:1rem;">
+          <div class="panel-label"><span class="status-dot amber" style="width:5px;height:5px;"></span> TARGETING</div>
+          <div style="padding:0.8rem 1rem;">
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+              <div style="font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--text);display:flex;gap:0.5rem;align-items:center;"><span style="color:var(--accent)">&gt;</span> Cloud Engineer</div>
+              <div style="font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--text);display:flex;gap:0.5rem;align-items:center;"><span style="color:var(--accent)">&gt;</span> DevOps Engineer</div>
+              <div style="font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--text);display:flex;gap:0.5rem;align-items:center;"><span style="color:var(--accent)">&gt;</span> Platform Engineer</div>
+              <div style="font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--text);display:flex;gap:0.5rem;align-items:center;"><span style="color:var(--accent)">&gt;</span> Site Reliability Engineer</div>
+              <div style="font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--muted);margin-top:0.75rem;letter-spacing:0.1em;">£45,000 — £65,000 · UK REMOTE/HYBRID</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-3">
+        <div class="hud-panel cta-block" style="height:100%;">
+          <div class="panel-label"><span class="status-dot" style="width:5px;height:5px;"></span> INITIATE CONTACT</div>
+          <div style="padding:1.5rem;">
+            <p style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">// OPEN CHANNEL</p>
+            <p>Looking for a platform engineer who ships production-grade infrastructure and documents every architectural decision? Let's connect.</p>
+            <a href="mailto:hello@bluelayersystems.com" class="btn-primary" style="display:inline-block;margin-top:1.5rem;"><span>SEND TRANSMISSION</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-logo">BLUE LAYER SYSTEMS</div>
+  <div class="footer-copy">© 2025 BLS — ALL RIGHTS RESERVED · BUILT WITH NEXT.JS</div>
+</footer>
+
+<script>
+/* ── CURSOR ──────────────────────────────────────────── */
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+function animCursor() {
+  dot.style.left = mx + 'px';
+  dot.style.top  = my + 'px';
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+document.querySelectorAll('a, button, .hud-panel, .project-card, .cert-card').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+
+/* ── THEME TOGGLE ────────────────────────────────────── */
+const themeBtn        = document.getElementById('themeToggle');
+const mobileThemeBtn  = document.getElementById('mobileThemeToggle');
+const transition      = document.getElementById('page-transition');
+let isDark = true;
+
+function flashTransition(callback) {
+  transition.classList.add('active');
+  setTimeout(() => {
+    callback();
+    setTimeout(() => transition.classList.remove('active'), 50);
+  }, 300);
+}
+
+function applyTheme(dark) {
+  isDark = dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  themeBtn.textContent       = dark ? '◐ LIGHT' : '◑ DARK';
+  mobileThemeBtn.textContent = dark ? '◐ SWITCH TO LIGHT MODE' : '◑ SWITCH TO DARK MODE';
+}
+
+themeBtn.addEventListener('click', () => {
+  flashTransition(() => applyTheme(!isDark));
+});
+mobileThemeBtn.addEventListener('click', () => {
+  closeMobileMenu();
+  flashTransition(() => applyTheme(!isDark));
+});
+
+/* ── HAMBURGER ───────────────────────────────────────── */
+const hamburger  = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+let menuOpen = false;
+
+function closeMobileMenu() {
+  menuOpen = false;
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+hamburger.addEventListener('click', () => {
+  menuOpen = !menuOpen;
+  hamburger.classList.toggle('open', menuOpen);
+  mobileMenu.classList.toggle('open', menuOpen);
+  document.body.style.overflow = menuOpen ? 'hidden' : '';
+});
+
+// Close drawer when a mobile link is tapped
+document.querySelectorAll('.mobile-menu a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    closeMobileMenu();
+    if (!target) return;
+    transition.classList.add('active');
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: 'instant' });
+      target.classList.add('section-entering');
+      setTimeout(() => {
+        transition.classList.remove('active');
+        setTimeout(() => target.classList.remove('section-entering'), 600);
+      }, 80);
+    }, 300);
+  });
+});
+
+/* ── NAV LINKS — FADE ON SECTION CHANGE ─────────────── */
+document.querySelectorAll('.nav-links a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (!target) return;
+    transition.classList.add('active');
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: 'instant' });
+      target.classList.add('section-entering');
+      setTimeout(() => {
+        transition.classList.remove('active');
+        setTimeout(() => target.classList.remove('section-entering'), 600);
+      }, 80);
+    }, 300);
+  });
+});
+
+/* ── NAVBAR SCROLL ───────────────────────────────────── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+/* ── HERO PARALLAX ───────────────────────────────────── */
+const heroName = document.querySelector('.parallax-text');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (heroName && y < window.innerHeight) {
+    heroName.style.transform = `translateY(${y * 0.18}px)`;
+    heroName.style.opacity = 1 - (y / (window.innerHeight * 0.7));
+  }
+}, { passive: true });
+
+/* ── TYPING EFFECT ───────────────────────────────────── */
+const STRINGS = ['Platform Engineer','Cloud Architect','DevOps Engineer','Infrastructure Builder','SRE'];
+let si = 0, ci = 0, deleting = false;
+const typedEl = document.getElementById('typed-text');
+
+function type() {
+  const cur = STRINGS[si % STRINGS.length];
+  if (!deleting && ci < cur.length) {
+    typedEl.textContent = cur.slice(0, ++ci);
+    setTimeout(type, 75);
+  } else if (!deleting && ci === cur.length) {
+    deleting = true;
+    setTimeout(type, 1800);
+  } else if (deleting && ci > 0) {
+    typedEl.textContent = cur.slice(0, --ci);
+    setTimeout(type, 40);
+  } else {
+    deleting = false;
+    si++;
+    setTimeout(type, 200);
+  }
+}
+setTimeout(type, 1400);
+
+/* ── TICKER ──────────────────────────────────────────── */
+const TICKER_ITEMS = [
+  'Azure', 'Terraform', 'Kubernetes', 'GitOps', 'ArgoCD',
+  'Helm', 'Docker', 'GitHub Actions', 'Prometheus', 'Grafana',
+  'pfSense', 'Proxmox', 'PowerShell', 'Python', 'FastAPI',
+  'Hyper-V', 'Entra ID', 'Intune', 'Exchange Online', 'LiteLLM'
+];
+const ticker = document.getElementById('ticker');
+const buildTicker = () => {
+  let html = '';
+  [...TICKER_ITEMS, ...TICKER_ITEMS].forEach(item => {
+    html += `<span class="ticker-item"><span class="dot">◆</span>${item}</span>`;
+  });
+  ticker.innerHTML = html;
+};
+buildTicker();
+
+/* ── PROJECTS ────────────────────────────────────────── */
+const PROJECTS = [
+  { phase:'PROJECT 01', name:'bls-azure-landing-zone', desc:'Azure Landing Zone — Terraform, GitHub Actions, Checkov, Infracost. Hub-spoke topology, policy-as-code, remote state in Azure Storage.', tags:['terraform','azure','iac','github-actions'], lang:'HCL', status:'active' },
+  { phase:'PROJECT 02', name:'bls-aks-platform', desc:'AKS Platform — Kubernetes cluster with Helm, ArgoCD, GitOps workflow mirroring k3s homelab. Horizontal pod autoscaling and KEDA.', tags:['kubernetes','aks','argocd','helm'], lang:'YAML', status:'active' },
+  { phase:'PROJECT 03', name:'bls-cicd-pipeline', desc:'CI/CD Pipeline — GitHub Actions for infra validation, Terraform plan/apply, Checkov security scanning, and Infracost delta reporting.', tags:['github-actions','terraform','checkov'], lang:'YAML', status:'active' },
+  { phase:'PROJECT 04', name:'bls-observability-stack', desc:'Observability — Prometheus, Grafana, Loki. PromQL dashboards, alerting rules, SLI/SLO definitions, and incident response runbooks.', tags:['prometheus','grafana','loki','sre'], lang:'Python', status:'planned' },
+  { phase:'PROJECT 05', name:'bls-policy-governance', desc:'Policy & Governance — OPA/Rego, Azure Policy, compliance-as-code. Guardrails across the platform enforced at pipeline and cloud level.', tags:['opa','azure-policy','compliance'], lang:'Rego', status:'planned' },
+  { phase:'PROJECT 06', name:'bls-ai-gateway', desc:'AI Gateway — LiteLLM routing across DeepSeek, Azure OpenAI, Anthropic, and Ollama on Proxmox. FastAPI, Redis, PostgreSQL backend.', tags:['litellm','fastapi','redis','llm'], lang:'Python', status:'planned' },
+  { phase:'HOMELAB', name:'homelab-infrastructure', desc:'Proxmox cluster, pfSense, TP-Link managed switching, VLAN segmentation (10/20/30/40/50/99/200), Cloudflare Tunnel, k3s.', tags:['proxmox','pfsense','networking','vlan'], lang:'HCL', status:'active' },
+];
+
+const grid = document.getElementById('projects-grid');
+PROJECTS.forEach((p, i) => {
+  const delay = i * 0.07;
+  const statusDot = p.status === 'active'
+    ? '<span class="status-dot" style="width:5px;height:5px;"></span>'
+    : '<span class="status-dot amber" style="width:5px;height:5px;"></span>';
+  grid.innerHTML += `
+  <div class="hud-panel project-card reveal reveal-delay-${Math.min(i+1,6)}">
+    <div class="panel-label">${statusDot} ${p.phase}</div>
+    <div class="project-card-inner">
+      <div class="project-name">${p.name}</div>
+      <div class="project-desc">${p.desc}</div>
+      <div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="project-footer">
+        <span class="project-lang">${p.lang}</span>
+        <a href="https://github.com/CalmAfterReboot/${p.name}" target="_blank" class="project-link">GITHUB →</a>
+      </div>
+    </div>
+  </div>`;
+});
+
+/* ── SKILLS ──────────────────────────────────────────── */
+const SKILL_GROUPS = [
+  { label:'CLOUD & INFRASTRUCTURE', skills:[
+    {n:'Azure (IaaS/PaaS/Identity)',level:85},{n:'Terraform / IaC',level:65},
+    {n:'Kubernetes / AKS / k3s',level:55},{n:'Hyper-V / Proxmox',level:90},{n:'Ansible',level:50}
+  ]},
+  { label:'CI/CD & DEVOPS', skills:[
+    {n:'GitHub Actions',level:70},{n:'ArgoCD / GitOps',level:50},
+    {n:'Docker',level:75},{n:'Helm',level:55},{n:'Checkov / OPA',level:45}
+  ]},
+  { label:'NETWORKING & SECURITY', skills:[
+    {n:'pfSense / DrayTek / Meraki',level:85},{n:'VLAN / Routing',level:75},
+    {n:'Sophos / Endpoint',level:80},{n:'DNS / Cloudflare',level:85},{n:'Entra ID / Zero-trust',level:75}
+  ]},
+  { label:'OBSERVABILITY & SCRIPTING', skills:[
+    {n:'PowerShell / Bash',level:80},{n:'Python (FastAPI)',level:50},
+    {n:'Prometheus / Grafana',level:45},{n:'KQL / Log Analytics',level:65},{n:'Datto RMM',level:80}
+  ]},
+];
+
+const skillsGrid = document.getElementById('skills-grid');
+SKILL_GROUPS.forEach((g, gi) => {
+  let bars = g.skills.map((s,si) => `
+    <div class="skill-row">
+      <div class="skill-row-top">
+        <span class="skill-name">${s.n}</span>
+        <span class="skill-pct">${s.level}%</span>
+      </div>
+      <div class="skill-bar" data-target="${s.level}">
+        <div class="skill-fill" style="--target-width:${s.level}%"></div>
+      </div>
+    </div>`).join('');
+
+  skillsGrid.innerHTML += `
+  <div class="hud-panel skill-group reveal reveal-delay-${gi+1}">
+    <div class="skill-group-label">${g.label}</div>
+    ${bars}
+  </div>`;
+});
+
+/* ── INTERSECTION OBSERVER ───────────────────────────── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Animate skill bars when visible
+      entry.target.querySelectorAll('.skill-bar').forEach(bar => {
+        bar.classList.add('animated');
+      });
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Also observe skill groups for bar animation
+const skillObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.skill-bar').forEach(bar => bar.classList.add('animated'));
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.skill-group').forEach(el => skillObserver.observe(el));
+</script>
+</body>
+</html>
