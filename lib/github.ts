@@ -24,6 +24,11 @@ export const BLS_META: Record<
   string,
   { phase: string; description: string }
 > = {
+  "BLS-Website": {
+    phase: "PORTFOLIO",
+    description:
+      "Production portfolio site for Blue Layer Systems — built with Next.js 14, TypeScript, Tailwind CSS, and a Groq-powered AI assistant. Deployed to Vercel at bluelayersystems.com.",
+  },
   "bls-azure-landing-zone": {
     phase: "PROJECT 01",
     description:

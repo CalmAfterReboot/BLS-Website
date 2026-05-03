@@ -16,9 +16,17 @@ const LINKS = [
 /** Must match `hud.module.css`: desktop nav at min-width 769px */
 const MOBILE_NAV_MQ = "(max-width: 768px)";
 
+const NAVBAR_HEIGHT = 60;
+
 function scrollToSection(id: string) {
   const el = document.getElementById(id);
-  el?.scrollIntoView({ behavior: "auto", block: "start" });
+  if (!el) return;
+  const top = el.getBoundingClientRect().top + window.scrollY - NAVBAR_HEIGHT;
+  window.scrollTo({ top, behavior: "instant" });
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 export function Navbar() {
@@ -66,6 +74,13 @@ export function Navbar() {
     };
   }, [open]);
 
+  const navigateHome = () => {
+    void runTransition(() => {
+      scrollToTop();
+      setOpen(false);
+    });
+  };
+
   const navigate = (id: string) => {
     void runTransition(() => {
       scrollToSection(id);
@@ -80,7 +95,7 @@ export function Navbar() {
           <button
             type="button"
             className={[styles.brand, "text-left"].join(" ")}
-            onClick={() => navigate("hero")}
+            onClick={navigateHome}
             aria-label="Go to top"
           >
             <span className={styles.brandAccent}>BLS</span>
@@ -93,7 +108,7 @@ export function Navbar() {
             <button
               type="button"
               className={styles.navLink}
-              onClick={() => navigate("hero")}
+              onClick={navigateHome}
             >
               HOME
             </button>
@@ -137,7 +152,7 @@ export function Navbar() {
           <button
             type="button"
             className={styles.drawerLink}
-            onClick={() => navigate("hero")}
+            onClick={navigateHome}
           >
             HOME
           </button>
