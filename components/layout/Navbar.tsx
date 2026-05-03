@@ -16,7 +16,7 @@ const LINKS = [
 /** Must match `hud.module.css`: desktop nav at min-width 769px */
 const MOBILE_NAV_MQ = "(max-width: 768px)";
 
-const NAVBAR_HEIGHT = 60;
+const NAVBAR_HEIGHT = 100; // navbar (60px) + ticker (40px)
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id);
