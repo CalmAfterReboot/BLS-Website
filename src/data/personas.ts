@@ -17,7 +17,7 @@ export const personaContent: Record<NonNullable<Persona>, PersonaContent> = {
   engineer: {
     heroPrimary: "View Projects",
     heroSecondary: "See Homelab",
-    heroTag: "AZ-104 in progress · Terraform Associate next · Proxmox + AKS lab",
+    heroTag: "AZ-104 ✓ · Terraform Associate in progress · Proxmox + AKS lab",
     storyEmphasis: ["homelab", "depth", "architecture"],
   },
   architect: {

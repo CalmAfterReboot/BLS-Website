@@ -230,6 +230,7 @@ script in app/layout.tsx reads theme before first paint.
 
 ## Cert Roadmap
 
+- AZ-900 — ✅ Passed
 - AZ-104 — ✅ Passed
 - Terraform Associate — 🔄 In Progress
 - AZ-400 — 📋 Planned
@@ -241,14 +242,10 @@ script in app/layout.tsx reads theme before first paint.
 
 | Repo | Status | Description |
 |---|---|---|
-| BLS-Website | ✅ Live | This portfolio site |
-| bls-azure-landing-zone | 🔄 Building | Terraform, GitHub Actions, Checkov |
-| bls-aks-platform | 📋 Planned | AKS, ArgoCD, Helm, GitOps |
-| bls-cicd-pipeline | 📋 Planned | GitHub Actions, security scanning |
-| bls-observability-stack | 📋 Planned | Prometheus, Grafana, Loki |
-| bls-policy-governance | 📋 Planned | OPA, Azure Policy |
-| bls-ai-gateway | 📋 Planned | LiteLLM, FastAPI, Redis |
-| homelab-infrastructure | 🔄 Active | Proxmox, pfSense, k3s, VLANs |
+| [BLS-Website](https://github.com/CalmAfterReboot/BLS-Website) | ✅ Live | This portfolio site |
+| [azure-landing-zone](https://github.com/CalmAfterReboot/azure-landing-zone) | 🔄 Building | Terraform, GitHub Actions, Checkov, Infracost |
+| [aks-platform](https://github.com/CalmAfterReboot/aks-platform) | 📋 Planned | AKS, Helm, RBAC, GitHub Actions CI/CD |
+| [litellm-gateway](https://github.com/CalmAfterReboot/litellm-gateway) | 🔄 Active | Self-hosted LiteLLM on Proxmox, Ollama, Cloudflare tunnel |
 
 ---
 

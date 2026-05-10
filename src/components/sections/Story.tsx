@@ -103,8 +103,9 @@ export function Story() {
             <motion.div variants={staggerContainer(0.15)} className="flex flex-wrap gap-4">
               {[
                 { label: "AZ-900",            status: "earned",      color: "#00FF88" },
-                { label: "AZ-104",            status: "in-progress", color: "#FFB347" },
-                { label: "Terraform Assoc.",  status: "next",        color: "#7B4FFF" },
+                { label: "AZ-104",            status: "earned",      color: "#00FF88" },
+                { label: "Terraform Assoc.",  status: "in-progress", color: "#FFB347" },
+                { label: "AZ-400",            status: "next",        color: "#7B4FFF" },
               ].map((cert) => (
                 <motion.div
                   key={cert.label}
