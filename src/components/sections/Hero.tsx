@@ -58,7 +58,7 @@ export function Hero() {
           <div>
             {/* Name */}
             <motion.h1
-              className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[0.1em] mb-4"
+              className="font-display text-3xl sm:text-4xl md:text-5xl xl:text-6xl tracking-[0.1em] mb-4"
               variants={staggerContainer(0.04, 0.3)}
               initial="hidden"
               animate={inView ? "visible" : "hidden"}
