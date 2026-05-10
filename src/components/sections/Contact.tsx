@@ -46,7 +46,7 @@ export function Contact() {
     },
     {
       label: "Email",
-      href: "mailto:mihai.ferencz@hotmail.com",
+      href: "mailto:mihai.ferencz@bluelayersystems.com",
       Icon: Mail,
       color: "#FFB347",
     },

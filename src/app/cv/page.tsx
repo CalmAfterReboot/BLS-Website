@@ -36,7 +36,7 @@ export default function CVPage() {
           </p>
           <p style={{ fontSize: 11.5, color: "#555", margin: 0, lineHeight: 1.7 }}>
             Carlisle, UK&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href="mailto:mihai.ferencz@hotmail.com" style={{ color: "#0070cc" }}>mihai.ferencz@hotmail.com</a>
+            <a href="mailto:mihai.ferencz@bluelayersystems.com" style={{ color: "#0070cc" }}>mihai.ferencz@bluelayersystems.com</a>
             &nbsp;&nbsp;|&nbsp;&nbsp;07436 784212
             <br />
             <a href="https://github.com/CalmAfterReboot" style={{ color: "#0070cc" }}>github.com/CalmAfterReboot</a>

@@ -87,23 +87,24 @@ export function Story() {
               ))}
             </motion.div>
             <motion.p variants={slideUp} className="font-body text-[var(--text-secondary)] leading-relaxed">
-              Five years in the IT trenches — MSP support, on-site deployments, 3am incidents.
-              Built the muscle memory that means cloud architecture is never theoretical.
+              Five years of production infrastructure operations — M365, Azure, AVD, FSLogix,
+              Hyper-V, Intune, and PowerShell daily. Terraform, GitHub Actions, and AKS through
+              live portfolio projects. Operational depth built in production, not in a lab.
             </motion.p>
           </Panel>
 
           {/* Panel 2 — Elevation */}
-          <Panel era="ERA 02 // ELEVATION" title="MOVED TO THE CLOUD" delay={0.1}>
+          <Panel era="ERA 02 // ELEVATION" title="FROM OPERATIONS TO ENGINEERING" delay={0.1}>
             <motion.p variants={slideUp} className="font-body text-[var(--text-secondary)] leading-relaxed mb-8">
-              From FTSE-listed infrastructure to sole escalation point for 50+ MSP tenants.
-              Azure, Hyper-V, AVD, FSLogix, Terraform, GitHub Actions — production, daily.
+              50+ tenants. Full-stack infrastructure ownership across cloud, identity, networking,
+              and virtualisation. The BLS portfolio is where that experience meets modern platform
+              engineering.
             </motion.p>
 
             {/* Cert roadmap */}
             <motion.div variants={staggerContainer(0.15)} className="flex flex-wrap gap-4">
               {[
                 { label: "AZ-900",            status: "earned",      color: "#00FF88" },
-                { label: "AZ-104",            status: "earned",      color: "#00FF88" },
                 { label: "Terraform Assoc.",  status: "in-progress", color: "#FFB347" },
                 { label: "AZ-400",            status: "next",        color: "#7B4FFF" },
               ].map((cert) => (

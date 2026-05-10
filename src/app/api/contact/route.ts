@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           from: "BLS Portfolio <contact@bluelayersystems.com>",
-          to: ["mihai.ferencz@hotmail.com"],
+          to: ["mihai.ferencz@bluelayersystems.com"],
           subject: `BLS Contact: ${name}`,
           text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
         }),
