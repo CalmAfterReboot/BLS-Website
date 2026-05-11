@@ -159,7 +159,7 @@ export function StarExplosion() {
         position:      "fixed",
         inset:         0,
         pointerEvents: "none",
-        zIndex:        45,
+        zIndex:        1,
         mixBlendMode:  "screen",
       }}
     />

@@ -36,17 +36,6 @@ export function Experience() {
         OPERATIONAL HISTORY
       </motion.h2>
 
-      <AnimatePresence mode="wait">
-        {overlayEra && !portalEra && (
-          <EraOverlay
-            key={overlayEra.id}
-            era={overlayEra}
-            onClose={() => setOverlayEra(null)}
-            onEnterFull={() => { setPortalEra(overlayEra); setOverlayEra(null); }}
-          />
-        )}
-      </AnimatePresence>
-
       <AnimatePresence>
         {portalEra && (
           <EraPortal
@@ -57,27 +46,44 @@ export function Experience() {
         )}
       </AnimatePresence>
 
-      <div className="relative max-w-4xl mx-auto">
-        <motion.div
-          className="absolute left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-transparent via-nebula-cyan to-transparent"
-          initial={{ height: 0 }}
-          whileInView={{ height: "100%" }}
-          viewport={{ once: true }}
-          transition={{ duration: 2.0, ease: "easeOut" }}
-          style={{ boxShadow: "0 0 8px var(--nebula-cyan)" }}
-        />
-
-        {timeline.map((era, i) => (
-          <EraCard
-            key={era.id}
-            era={era}
-            index={i}
-            isActive={overlayEra?.id === era.id && !portalEra}
-            onEnterView={() => { if (!portalEra) setOverlayEra(era); }}
-            onLeaveView={() => setOverlayEra((p) => p?.id === era.id ? null : p)}
-            onClick={() => { setOverlayEra(null); setPortalEra(era); }}
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
+        {/* LEFT — cards column */}
+        <div className="relative w-full lg:w-[380px] flex-shrink-0">
+          <motion.div
+            className="absolute left-4 top-0 w-px bg-gradient-to-b from-transparent via-nebula-cyan to-transparent"
+            initial={{ height: 0 }}
+            whileInView={{ height: "100%" }}
+            viewport={{ once: true }}
+            transition={{ duration: 2.0, ease: "easeOut" }}
+            style={{ boxShadow: "0 0 8px var(--nebula-cyan)" }}
           />
-        ))}
+
+          {timeline.map((era, i) => (
+            <EraCard
+              key={era.id}
+              era={era}
+              index={i}
+              isActive={overlayEra?.id === era.id && !portalEra}
+              onEnterView={() => { if (!portalEra) setOverlayEra(era); }}
+              onLeaveView={() => setOverlayEra((p) => p?.id === era.id ? null : p)}
+              onClick={() => { setOverlayEra(null); setPortalEra(era); }}
+            />
+          ))}
+        </div>
+
+        {/* RIGHT — sticky panel */}
+        <div className="flex-1 sticky top-24">
+          <AnimatePresence mode="wait">
+            {overlayEra && !portalEra && (
+              <EraPanel
+                key={overlayEra.id}
+                era={overlayEra}
+                onClose={() => setOverlayEra(null)}
+                onEnterFull={() => { setPortalEra(overlayEra); setOverlayEra(null); }}
+              />
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );
@@ -87,7 +93,6 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
   era: Era; index: number; isActive: boolean;
   onEnterView: () => void; onLeaveView: () => void; onClick: () => void;
 }) {
-  const isLeft = index % 2 === 0;
   const { ref, inView } = useInView({ threshold: 0.6 });
 
   useEffect(() => {
@@ -101,7 +106,7 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
       ref={ref}
       onClick={onClick}
       data-cursor="hover"
-      initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
+      initial={{ opacity: 0, x: -30 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.6, delay: index * 0.12 }}
@@ -111,13 +116,12 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
           ? `0 0 40px ${era.palette.accent}44, 0 0 80px ${era.palette.accent}22`
           : "none",
       }}
-      className={`relative w-full md:w-5/12 mb-24 p-6 rounded-lg border
-        bg-[var(--cosmos-deep)]/60 backdrop-blur-sm cursor-pointer transition-all duration-500
-        ${isLeft ? "md:mr-auto" : "md:ml-auto"}`}
+      className="relative ml-10 mb-8 p-5 rounded-lg border
+        bg-[var(--cosmos-deep)]/60 backdrop-blur-sm cursor-pointer transition-all duration-500"
     >
+      {/* Timeline node aligned to spine */}
       <motion.span
-        className={`absolute top-8 w-3 h-3 rounded-full hidden md:block
-          ${isLeft ? "md:-right-[34px]" : "md:-left-[34px]"}`}
+        className="absolute -left-[22px] top-6 w-3 h-3 rounded-full"
         animate={{
           boxShadow: isActive
             ? `0 0 20px ${era.palette.accent}, 0 0 40px ${era.palette.accent}`
@@ -134,8 +138,8 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
       </div>
 
       <div className="font-mono text-xs tracking-wider text-[var(--text-muted)] mb-2">{era.period}</div>
-      <h3 className="font-display text-xl md:text-2xl tracking-wider mb-1">{era.role}</h3>
-      <div className="font-mono text-sm text-[var(--text-secondary)] mb-5">
+      <h3 className="font-display text-xl tracking-wider mb-1">{era.role}</h3>
+      <div className="font-mono text-sm text-[var(--text-secondary)] mb-4">
         {era.company} · {era.location}
       </div>
 
@@ -143,32 +147,32 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
         className="font-mono text-xs uppercase tracking-widest"
         animate={{ color: isActive ? era.palette.accent : "var(--text-muted)" }}
       >
-        {isActive ? "CLICK TO GO DEEPER →" : "SCROLL TO REVEAL · CLICK FOR FULL DETAIL →"}
+        {isActive ? "CLICK TO GO DEEPER →" : "CLICK FOR FULL DETAIL →"}
       </motion.div>
     </motion.div>
   );
 }
 
-function EraOverlay({ era, onClose, onEnterFull }: {
+function EraPanel({ era, onClose, onEnterFull }: {
   era: Era; onClose: () => void; onEnterFull: () => void;
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: 80 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 80 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed right-0 top-0 bottom-0 z-40 w-full md:w-[480px] overflow-y-auto"
+      className="rounded-xl overflow-hidden"
       style={{
         background: `linear-gradient(160deg, ${era.palette.bg}F2, ${era.palette.bg}FA)`,
-        borderLeft: `1px solid ${era.palette.accent}44`,
+        border: `1px solid ${era.palette.accent}44`,
         backdropFilter: "blur(28px)",
-        boxShadow: `-24px 0 80px ${era.palette.accent}18`,
+        boxShadow: `0 24px 80px ${era.palette.accent}18`,
       }}
     >
       <div className="h-[2px] w-full" style={{ background: era.palette.accent, boxShadow: `0 0 20px ${era.palette.accent}` }} />
 
-      <div className="p-8 flex flex-col h-full">
+      <div className="p-8">
         <div className="flex items-start justify-between mb-8">
           <div>
             <div className="font-mono text-xs tracking-[0.25em] mb-2 opacity-60" style={{ color: era.palette.accent }}>
@@ -198,7 +202,7 @@ function EraOverlay({ era, onClose, onEnterFull }: {
         <p className="font-mono text-[10px] tracking-[0.25em] text-[var(--text-muted)] uppercase mb-4">
           Key Achievements
         </p>
-        <div className="space-y-4 mb-8 flex-1">
+        <div className="space-y-4 mb-8">
           {era.achievements.slice(0, 4).map((a, i) => (
             <motion.div
               key={i}
