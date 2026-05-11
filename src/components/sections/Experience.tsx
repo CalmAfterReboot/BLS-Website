@@ -73,7 +73,7 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
   era: Era; index: number; isActive: boolean;
   onEnterView: () => void; onLeaveView: () => void; onClick: () => void;
 }) {
-  const { ref, inView } = useInView({ threshold: 0.3 });
+  const { ref, inView } = useInView({ threshold: 0.5, rootMargin: "-20% 0px -30% 0px" });
 
   useEffect(() => {
     if (inView) onEnterView();
