@@ -88,7 +88,7 @@ export const experience = [
   {
     id:          "global4",
     role:        "Technical Operations Engineer",
-    company:     "Global4 Communications",
+    company:     "Global4 ",
     location:    "Carlisle, UK",
     type:        "MSP",
     period:      "Sep 2025 → Present",
