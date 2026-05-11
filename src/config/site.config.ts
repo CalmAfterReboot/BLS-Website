@@ -141,7 +141,7 @@ export const eraFoundation = {
   label: "ERA 01 // FOUNDATION",
 
   // Era heading — large display text
-  heading: "STARTED IN THE TRENCHES",
+  heading: "BUILT IN PRODUCTION",
 
   // Body paragraph — main descriptive text below the stats
   body:

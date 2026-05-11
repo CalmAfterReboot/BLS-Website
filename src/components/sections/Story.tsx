@@ -70,7 +70,7 @@ export function Story() {
 
         <div className="space-y-8">
           {/* Panel 1 — Foundation */}
-          <Panel era="ERA 01 // FOUNDATION" title="STARTED IN THE TRENCHES">
+          <Panel era="ERA 01 // FOUNDATION" title="BUILT IN PRODUCTION">
             <motion.div variants={slideUp} className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
               {[
                 { to: 50,   suffix: "+", label: "Client Tenants" },
