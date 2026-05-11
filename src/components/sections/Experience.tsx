@@ -65,7 +65,11 @@ export function Experience() {
               index={i}
               isActive={overlayEra?.id === era.id && !portalEra}
               onEnterView={() => { if (!portalEra) setOverlayEra(era); }}
-              onLeaveView={() => setOverlayEra((p) => p?.id === era.id ? null : p)}
+              onLeaveView={() => {
+                setTimeout(() => {
+                  setOverlayEra((prev) => prev?.id === era.id ? null : prev);
+                }, 600);
+              }}
               onClick={() => { setOverlayEra(null); setPortalEra(era); }}
             />
           ))}
@@ -93,7 +97,7 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
   era: Era; index: number; isActive: boolean;
   onEnterView: () => void; onLeaveView: () => void; onClick: () => void;
 }) {
-  const { ref, inView } = useInView({ threshold: 0.6 });
+  const { ref, inView } = useInView({ threshold: 0.3 });
 
   useEffect(() => {
     if (inView) onEnterView();
