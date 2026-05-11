@@ -7,8 +7,8 @@ import { X } from "lucide-react";
 import { timeline, type Era } from "@/data/timeline";
 
 export function Experience() {
-  const [overlayEra, setOverlayEra] = useState<Era | null>(null);
-  const [portalEra, setPortalEra]   = useState<Era | null>(null);
+  const [activeEra, setActiveEra] = useState<Era | null>(null);
+  const [portalEra, setPortalEra] = useState<Era | null>(null);
 
   useEffect(() => {
     if (!portalEra) return;
@@ -17,13 +17,6 @@ export function Experience() {
     window.addEventListener("keydown", fn);
     return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", fn); };
   }, [portalEra]);
-
-  useEffect(() => {
-    if (!overlayEra || portalEra) return;
-    const fn = (e: KeyboardEvent) => { if (e.key === "Escape") setOverlayEra(null); };
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
-  }, [overlayEra, portalEra]);
 
   return (
     <section id="experience" className="min-h-screen py-24 px-6 lg:px-12 relative">
@@ -46,48 +39,31 @@ export function Experience() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
-        {/* LEFT — cards column */}
-        <div className="relative w-full lg:w-[380px] flex-shrink-0">
-          <motion.div
-            className="absolute left-4 top-0 w-px bg-gradient-to-b from-transparent via-nebula-cyan to-transparent"
-            initial={{ height: 0 }}
-            whileInView={{ height: "100%" }}
-            viewport={{ once: true }}
-            transition={{ duration: 2.0, ease: "easeOut" }}
-            style={{ boxShadow: "0 0 8px var(--nebula-cyan)" }}
+      <div className="relative max-w-[600px] mx-auto">
+        <motion.div
+          className="absolute left-4 top-0 w-px bg-gradient-to-b from-transparent via-nebula-cyan to-transparent"
+          initial={{ height: 0 }}
+          whileInView={{ height: "100%" }}
+          viewport={{ once: true }}
+          transition={{ duration: 2.0, ease: "easeOut" }}
+          style={{ boxShadow: "0 0 8px var(--nebula-cyan)" }}
+        />
+
+        {timeline.map((era, i) => (
+          <EraCard
+            key={era.id}
+            era={era}
+            index={i}
+            isActive={activeEra?.id === era.id && !portalEra}
+            onEnterView={() => { if (!portalEra) setActiveEra(era); }}
+            onLeaveView={() => {
+              setTimeout(() => {
+                setActiveEra((prev) => prev?.id === era.id ? null : prev);
+              }, 600);
+            }}
+            onClick={() => setPortalEra(era)}
           />
-
-          {timeline.map((era, i) => (
-            <EraCard
-              key={era.id}
-              era={era}
-              index={i}
-              isActive={overlayEra?.id === era.id && !portalEra}
-              onEnterView={() => { if (!portalEra) setOverlayEra(era); }}
-              onLeaveView={() => {
-                setTimeout(() => {
-                  setOverlayEra((prev) => prev?.id === era.id ? null : prev);
-                }, 600);
-              }}
-              onClick={() => { setOverlayEra(null); setPortalEra(era); }}
-            />
-          ))}
-        </div>
-
-        {/* RIGHT — sticky panel */}
-        <div className="flex-1 sticky top-24">
-          <AnimatePresence mode="wait">
-            {overlayEra && !portalEra && (
-              <EraPanel
-                key={overlayEra.id}
-                era={overlayEra}
-                onClose={() => setOverlayEra(null)}
-                onEnterFull={() => { setPortalEra(overlayEra); setOverlayEra(null); }}
-              />
-            )}
-          </AnimatePresence>
-        </div>
+        ))}
       </div>
     </section>
   );
@@ -123,7 +99,6 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
       className="relative ml-10 mb-8 p-5 rounded-lg border
         bg-[var(--cosmos-deep)]/60 backdrop-blur-sm cursor-pointer transition-all duration-500"
     >
-      {/* Timeline node aligned to spine */}
       <motion.span
         className="absolute -left-[22px] top-6 w-3 h-3 rounded-full"
         animate={{
@@ -151,106 +126,8 @@ function EraCard({ era, index, isActive, onEnterView, onLeaveView, onClick }: {
         className="font-mono text-xs uppercase tracking-widest"
         animate={{ color: isActive ? era.palette.accent : "var(--text-muted)" }}
       >
-        {isActive ? "CLICK TO GO DEEPER →" : "CLICK FOR FULL DETAIL →"}
+        {isActive ? "CLICK FOR FULL DETAIL →" : "SCROLL TO REVEAL · CLICK FOR FULL DETAIL →"}
       </motion.div>
-    </motion.div>
-  );
-}
-
-function EraPanel({ era, onClose, onEnterFull }: {
-  era: Era; onClose: () => void; onEnterFull: () => void;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-xl overflow-hidden"
-      style={{
-        background: `linear-gradient(160deg, ${era.palette.bg}F2, ${era.palette.bg}FA)`,
-        border: `1px solid ${era.palette.accent}44`,
-        backdropFilter: "blur(28px)",
-        boxShadow: `0 24px 80px ${era.palette.accent}18`,
-      }}
-    >
-      <div className="h-[2px] w-full" style={{ background: era.palette.accent, boxShadow: `0 0 20px ${era.palette.accent}` }} />
-
-      <div className="p-8">
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <div className="font-mono text-xs tracking-[0.25em] mb-2 opacity-60" style={{ color: era.palette.accent }}>
-              {era.period}
-            </div>
-            <h3 className="font-display text-3xl tracking-wider mb-1" style={{ color: era.palette.accent }}>
-              {era.role}
-            </h3>
-            <p className="font-mono text-sm text-[var(--text-secondary)]">
-              {era.company} · {era.location}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            data-cursor="hover"
-            className="text-[var(--text-muted)] hover:text-white transition-colors mt-1 flex-shrink-0 ml-4"
-            aria-label="Close"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="h-px mb-6 opacity-20" style={{ background: era.palette.accent }} />
-
-        <p className="text-sm leading-[1.8] text-[var(--text-primary)] mb-8">{era.summary}</p>
-
-        <p className="font-mono text-[10px] tracking-[0.25em] text-[var(--text-muted)] uppercase mb-4">
-          Key Achievements
-        </p>
-        <div className="space-y-4 mb-8">
-          {era.achievements.slice(0, 4).map((a, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.15 + i * 0.08 }}
-              className="flex gap-4 p-4 rounded-lg border"
-              style={{ borderColor: `${era.palette.accent}22`, background: `${era.palette.accent}06` }}
-            >
-              <span className="text-2xl flex-shrink-0">{a.icon}</span>
-              <div>
-                <p className="text-sm font-semibold text-[var(--text-primary)] mb-1">{a.title}</p>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  {a.detail.split(".")[0]}.
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <p className="font-mono text-[10px] tracking-[0.25em] text-[var(--text-muted)] uppercase mb-3">
-          Daily Stack
-        </p>
-        <div className="flex flex-wrap gap-2 mb-8">
-          {era.daily.slice(0, 9).map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-1 text-xs font-mono rounded border"
-              style={{ borderColor: `${era.palette.accent}40`, color: era.palette.accent, background: `${era.palette.accent}08` }}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        <button
-          onClick={onEnterFull}
-          data-cursor="hover"
-          className="w-full py-4 font-mono text-sm tracking-widest border rounded-lg transition-all duration-300 hover:bg-white/5"
-          style={{ borderColor: era.palette.accent, color: era.palette.accent }}
-        >
-          ENTER THIS ERA FULLY →
-        </button>
-      </div>
     </motion.div>
   );
 }
