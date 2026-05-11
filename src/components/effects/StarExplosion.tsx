@@ -26,11 +26,11 @@ function pick<T>(arr: T[]): T {
 }
 
 export function StarExplosion() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef   = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
-  const rafRef = useRef<number>(0);
-  const lastBurstRef = useRef({ x: -999, y: -999, t: 0 });
-  const themeRef = useRef(useThemeStore.getState().theme);
+  const rafRef      = useRef<number>(0);
+  const lastMoveRef = useRef({ x: -999, y: -999, t: 0 });
+  const themeRef    = useRef(useThemeStore.getState().theme);
 
   useEffect(() => {
     return useThemeStore.subscribe((s) => {
@@ -51,78 +51,91 @@ export function StarExplosion() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const resize = () => {
-      canvas.width = window.innerWidth * dpr;
+      canvas.width  = window.innerWidth  * dpr;
       canvas.height = window.innerHeight * dpr;
-      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.width  = `${window.innerWidth}px`;
       canvas.style.height = `${window.innerHeight}px`;
       ctx.scale(dpr, dpr);
     };
     resize();
     window.addEventListener("resize", resize);
 
-    const spawnBackgroundBurst = (cursorX: number, cursorY: number) => {
+    const spawnRing = (
+      cx: number,
+      cy: number,
+      count: number,
+      minDist: number,
+      maxDist: number,
+      speed: number,
+      lifetime: number,
+    ) => {
       const colors = THEME_COLORS[themeRef.current] ?? THEME_COLORS.nebula;
-      const count = 5 + Math.floor(Math.random() * 4);
 
       for (let i = 0; i < count; i++) {
-        // Spawn AWAY from cursor — 120 to 300px radius
-        const spawnAngle = Math.random() * Math.PI * 2;
-        const spawnDist = 120 + Math.random() * 180;
-        const x = cursorX + Math.cos(spawnAngle) * spawnDist;
-        const y = cursorY + Math.sin(spawnAngle) * spawnDist;
+        const angle    = Math.random() * Math.PI * 2;
+        const dist     = minDist + Math.random() * (maxDist - minDist);
+        const x        = cx + Math.cos(angle) * dist;
+        const y        = cy + Math.sin(angle) * dist;
 
-        // Drift slowly outward from spawn point
-        const driftAngle = spawnAngle + (Math.random() - 0.5) * 1.2;
-        const speed = 6 + Math.random() * 14;
+        const driftAngle = angle + (Math.random() - 0.5) * 1.4;
+        const spd        = speed * (0.4 + Math.random() * 0.6);
 
         particlesRef.current.push({
           x,
           y,
-          vx: Math.cos(driftAngle) * speed,
-          vy: Math.sin(driftAngle) * speed,
-          size: 1.2 + Math.random() * 2.8,
+          vx:    Math.cos(driftAngle) * spd,
+          vy:    Math.sin(driftAngle) * spd,
+          size:  1.5 + Math.random() * 3.5,
           color: pick(colors),
-          life: 1,
-          decay: 1 / ((1.4 + Math.random() * 1.2) * 60),
+          life:  1,
+          decay: 1 / (lifetime * 60),
         });
       }
     };
 
     const onMove = (e: MouseEvent) => {
       const now = Date.now();
-      const dx = e.clientX - lastBurstRef.current.x;
-      const dy = e.clientY - lastBurstRef.current.y;
+      const dx  = e.clientX - lastMoveRef.current.x;
+      const dy  = e.clientY - lastMoveRef.current.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist > 25 && now - lastBurstRef.current.t > 180) {
-        spawnBackgroundBurst(e.clientX, e.clientY);
-        lastBurstRef.current = { x: e.clientX, y: e.clientY, t: now };
+      if (dist > 18 && now - lastMoveRef.current.t > 150) {
+        spawnRing(e.clientX, e.clientY, 6, 80, 200, 22, 1.6);
+        spawnRing(e.clientX, e.clientY, 4, 200, 400, 10, 2.4);
+        lastMoveRef.current = { x: e.clientX, y: e.clientY, t: now };
       }
     };
 
+    const onClick = (e: MouseEvent) => {
+      spawnRing(e.clientX, e.clientY, 14, 100, 280, 45, 1.2);
+      spawnRing(e.clientX, e.clientY, 8,  280, 500, 14, 2.8);
+    };
+
     window.addEventListener("mousemove", onMove);
+    window.addEventListener("click",     onClick);
 
     const draw = () => {
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       particlesRef.current = particlesRef.current.filter((p) => p.life > 0);
 
       for (const p of particlesRef.current) {
-        const alpha = Math.pow(p.life, 2) * 0.7;
-        const currentSize = p.size * Math.pow(p.life, 0.3);
+        const alpha       = Math.pow(p.life, 1.8) * 0.8;
+        const currentSize = p.size * Math.pow(p.life, 0.35);
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, Math.max(0.1, currentSize), 0, Math.PI * 2);
         ctx.fillStyle =
           p.color + Math.floor(alpha * 255).toString(16).padStart(2, "0");
-        ctx.shadowBlur = currentSize * 5;
+
+        ctx.shadowBlur  = currentSize * 6;
         ctx.shadowColor = p.color;
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        p.x += p.vx / 60;
-        p.y += p.vy / 60;
-        p.vx *= 0.93;
-        p.vy *= 0.93;
+        p.x  += p.vx / 60;
+        p.y  += p.vy / 60;
+        p.vx *= 0.92;
+        p.vy *= 0.92;
         p.life -= p.decay;
       }
 
@@ -131,8 +144,9 @@ export function StarExplosion() {
     rafRef.current = requestAnimationFrame(draw);
 
     return () => {
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize",    resize);
       window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("click",     onClick);
       cancelAnimationFrame(rafRef.current);
     };
   }, []);
@@ -142,11 +156,11 @@ export function StarExplosion() {
       ref={canvasRef}
       aria-hidden="true"
       style={{
-        position: "fixed",
-        inset: 0,
+        position:      "fixed",
+        inset:         0,
         pointerEvents: "none",
-        zIndex: 2,
-        mixBlendMode: "screen",
+        zIndex:        2,
+        mixBlendMode:  "screen",
       }}
     />
   );
