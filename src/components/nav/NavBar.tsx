@@ -4,23 +4,17 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
 import { ScannerTransition } from "./ScannerTransition";
-import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { usePersonaStore } from "@/store/personaStore";
-import { Menu, X, Download, RotateCcw } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
 
 const NAV_ITEMS = [
-  { id: "story",      label: "Story" },
-  { id: "skills",     label: "Skills" },
-  { id: "projects",   label: "Projects" },
-  { id: "experience", label: "Experience" },
-  { id: "contact",    label: "Contact" },
+  { id: "projects", label: "Projects" },
+  { id: "contact",  label: "Contact" },
 ] as const;
 
 export function NavBar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scanning, setScanning] = useState<string | null>(null);
-  const reset = usePersonaStore((s) => s.reset);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -75,15 +69,6 @@ export function NavBar() {
                 <span className="absolute -bottom-1 left-0 w-0 group-hover:w-full h-px bg-[var(--nebula-cyan)] transition-all duration-500 shadow-glow-cyan" />
               </button>
             ))}
-            <ThemeSwitcher />
-            <button
-              data-cursor="hover"
-              onClick={reset}
-              title="Switch persona"
-              className="text-[var(--text-muted)] hover:text-[var(--nebula-cyan)] transition-colors"
-            >
-              <RotateCcw size={14} />
-            </button>
             <a
               href="/cv"
               target="_blank"

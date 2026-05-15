@@ -3,16 +3,6 @@ import { Rajdhani, JetBrains_Mono, DM_Sans } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 
-// Dynamic imports keep tsParticles and canvas cursor OUT of the initial bundle.
-// They load after hydration — no impact on LCP or FID.
-const NebulaBackground = dynamic(
-  () => import("@/components/effects/NebulaBackground").then((m) => ({ default: m.NebulaBackground })),
-  { ssr: false }
-);
-const StarExplosion = dynamic(
-  () => import("@/components/effects/StarExplosion").then((m) => ({ default: m.StarExplosion })),
-  { ssr: false }
-);
 const GalaxyCursor = dynamic(
   () => import("@/components/effects/GalaxyCursor").then((m) => ({ default: m.GalaxyCursor })),
   { ssr: false }
@@ -77,8 +67,6 @@ export default function RootLayout({
       className={`${display.variable} ${mono.variable} ${body.variable}`}
     >
       <body className="font-body bg-cosmos-void text-[var(--text-primary)]">
-        <NebulaBackground />
-        <StarExplosion />
         <GalaxyCursor />
         <main className="relative z-10">{children}</main>
         <ChatWidget />
