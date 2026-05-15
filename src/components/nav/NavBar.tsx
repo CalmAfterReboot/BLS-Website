@@ -1,20 +1,30 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { ScannerTransition } from "./ScannerTransition";
-import { Menu, X, Download } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
-const NAV_ITEMS = [
-  { id: "projects", label: "Projects" },
-  { id: "contact",  label: "Contact" },
-] as const;
+interface NavItem {
+  id: string;
+  label: string;
+  href: string;
+  anchor?: boolean;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { id: "projects",     label: "Projects",     href: "/#projects",     anchor: true },
+  { id: "tools",        label: "Tools",        href: "/tools" },
+  { id: "case-studies", label: "Case Studies", href: "/case-studies" },
+  { id: "cv",           label: "CV",           href: "/cv" },
+  { id: "contact",      label: "Contact",      href: "/#contact",      anchor: true },
+];
 
 export function NavBar() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scanning, setScanning] = useState<string | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -22,111 +32,76 @@ export function NavBar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navigate = (id: string) => {
-    setScanning(id);
-    setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 350);
-    setTimeout(() => setScanning(null), 1100);
-    setMobileOpen(false);
+  const isActive = (item: NavItem) => {
+    if (item.anchor) return false;
+    if (item.href === "/") return pathname === "/";
+    return pathname === item.href || pathname.startsWith(`${item.href}/`);
   };
 
   return (
-    <>
-      {scanning && <ScannerTransition />}
-      <motion.nav
-        initial={{ y: -40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className={cn(
-          "fixed top-0 left-0 right-0 z-40 transition-all duration-500",
-          scrolled
-            ? "backdrop-blur-xl bg-[var(--cosmos-deep)]/80 border-b border-[var(--border-subtle)]"
-            : "bg-transparent"
-        )}
-      >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Brand */}
-          <button
-            data-cursor="hover"
-            onClick={() => navigate("hero")}
-            className="font-display text-xl tracking-[0.25em] flex items-center gap-2"
-          >
-            <span className="w-2 h-2 rounded-full bg-[var(--nebula-cyan)] animate-pulse" />
-            BLS
-          </button>
-
-          {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-8">
-            {NAV_ITEMS.map((item) => (
-              <button
-                key={item.id}
-                data-cursor="hover"
-                onClick={() => navigate(item.id)}
-                className="relative font-mono text-sm tracking-wider text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
-              >
-                {item.label.toUpperCase()}
-                <span className="absolute -bottom-1 left-0 w-0 group-hover:w-full h-px bg-[var(--nebula-cyan)] transition-all duration-500 shadow-glow-cyan" />
-              </button>
-            ))}
-            <a
-              href="/cv"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-cursor="hover"
-              className="flex items-center gap-2 px-4 py-2 border border-[var(--nebula-cyan)] text-[var(--nebula-cyan)] font-mono text-sm tracking-wider hover:bg-[var(--nebula-cyan)] hover:text-[var(--cosmos-void)] transition-all duration-300 hover:shadow-glow-cyan"
-            >
-              <Download size={14} />
-              CV
-            </a>
-          </div>
-
-          {/* Mobile toggle */}
-          <button
-            data-cursor="hover"
-            onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden text-[var(--text-primary)]"
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-      </motion.nav>
-
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-30 bg-[var(--cosmos-void)]/95 backdrop-blur-xl flex flex-col items-center justify-center md:hidden"
-        >
-          {NAV_ITEMS.map((item, i) => (
-            <motion.button
-              key={item.id}
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.05 + i * 0.06 }}
-              onClick={() => navigate(item.id)}
-              className="font-display text-3xl tracking-widest py-4"
-            >
-              {item.label.toUpperCase()}
-            </motion.button>
-          ))}
-          <motion.a
-            href="/cv"
-            target="_blank"
-            rel="noopener noreferrer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mt-8 flex items-center gap-2 px-6 py-3 border border-[var(--nebula-cyan)] text-[var(--nebula-cyan)] font-mono text-sm tracking-wider"
-          >
-            <Download size={14} />
-            DOWNLOAD CV
-          </motion.a>
-        </motion.div>
+    <nav
+      className={cn(
+        "fixed top-0 left-0 right-0 z-40 transition-colors",
+        scrolled ? "bg-base/95 border-b border-border" : "bg-transparent"
       )}
-    </>
+    >
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+        <Link
+          href="/"
+          data-cursor="hover"
+          className="font-mono text-sm tracking-widest text-text uppercase"
+        >
+          BLS
+        </Link>
+
+        <div className="hidden md:flex items-center gap-6">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              data-cursor="hover"
+              className={cn(
+                "font-mono text-xs uppercase tracking-wider transition-colors",
+                isActive(item)
+                  ? "text-accent-olive"
+                  : "text-text-dim hover:text-accent-olive"
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+
+        <button
+          onClick={() => setMobileOpen((v) => !v)}
+          className="md:hidden text-text"
+          aria-label="Toggle menu"
+        >
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {mobileOpen && (
+        <div className="md:hidden border-t border-border bg-base">
+          <div className="flex flex-col px-6 py-4 gap-4">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "font-mono text-sm uppercase tracking-wider transition-colors",
+                  isActive(item)
+                    ? "text-accent-olive"
+                    : "text-text-dim hover:text-accent-olive"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
   );
 }
