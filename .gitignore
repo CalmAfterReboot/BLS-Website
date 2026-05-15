@@ -31,3 +31,10 @@ yarn-error.log*
 
 # typescript
 # next-env.d.ts is generated; keep untracked or commit per team preference
+
+# Internal planning artefacts — not for publication
+claude-code-bundle/
+CLAUDE_CODE_BRIEF.md
+REFACTOR_PLAN.md
+README2.md
+BLOCKERS.md
