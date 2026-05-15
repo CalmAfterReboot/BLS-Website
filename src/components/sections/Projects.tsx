@@ -1,152 +1,116 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { useInView } from "react-intersection-observer";
-import { ExternalLink, Star, GitBranch, Code2 } from "lucide-react";
+import { ExternalLink, GitBranch } from "lucide-react";
 import { projectsFallback, type Project } from "@/data/projects-fallback";
-import { staggerContainer, slideUp } from "@/lib/motion-variants";
 
-function ProjectCard({ project, index }: { project: Project; index: number }) {
+type ProjectStatus = "ACTIVE" | "PLANNED" | "COMPLETE";
+
+function inferStatus(p: Project): ProjectStatus {
+  // TODO: surface status from data layer once /api/projects exposes it
+  if (!p.updatedAt) return "PLANNED";
+  const days = (Date.now() - new Date(p.updatedAt).getTime()) / 86_400_000;
+  if (days > 365) return "COMPLETE";
+  return "ACTIVE";
+}
+
+function StatusBadge({ status }: { status: ProjectStatus }) {
+  const colour =
+    status === "ACTIVE"   ? "border-l-status-ok text-status-ok"
+    : status === "PLANNED" ? "border-l-status-warning text-status-warning"
+    :                        "border-l-status-info text-status-info";
   return (
-    <motion.a
+    <span
+      className={`inline-flex items-center px-2 py-0.5 border border-border ${colour} border-l-2 font-mono text-[10px] uppercase tracking-wider`}
+    >
+      [ {status} ]
+    </span>
+  );
+}
+
+function ProjectCard({ project }: { project: Project }) {
+  const status = inferStatus(project);
+  return (
+    <a
       href={project.url}
       target="_blank"
       rel="noopener noreferrer"
       data-cursor="hover"
-      variants={slideUp}
-      whileHover={{ y: -4 }}
-      className="group relative block border border-[var(--border-subtle)] bg-[var(--cosmos-deep)]/50 backdrop-blur-sm rounded-lg p-6 transition-all duration-300 overflow-hidden"
+      className="group block border border-border bg-surface p-5 hover:border-accent-olive transition-colors"
     >
-      {/* Accent glow on hover */}
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{
-          background: `radial-gradient(circle at top left, ${project.accent}12 0%, transparent 60%)`,
-        }}
-      />
-
-      {/* Top row */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <GitBranch size={14} style={{ color: project.accent }} />
-          <span
-            className="font-display text-lg tracking-wider"
-            style={{ color: project.accent }}
-          >
+      <div className="flex items-start justify-between mb-3 gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <GitBranch size={14} className="text-text-mute flex-shrink-0" />
+          <span className="font-sans font-medium text-text truncate">
             {project.name}
           </span>
         </div>
-        <ExternalLink
-          size={14}
-          className="text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors"
-        />
+        <StatusBadge status={status} />
       </div>
 
-      {/* Description */}
-      <p className="font-body text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
+      <p className="text-sm text-text-dim leading-relaxed mb-4">
         {project.description}
       </p>
 
-      {/* Topics */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {project.topics.slice(0, 5).map((topic) => (
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {project.topics.slice(0, 6).map((topic) => (
           <span
             key={topic}
-            className="px-2 py-0.5 border rounded font-mono text-[10px] tracking-wider"
-            style={{
-              borderColor: `${project.accent}30`,
-              color: "var(--text-secondary)",
-            }}
+            className="px-1.5 py-0.5 border border-border font-mono text-[10px] text-text-dim uppercase tracking-wider"
           >
             {topic}
           </span>
         ))}
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center gap-4 font-mono text-xs text-[var(--text-muted)]">
-        {project.language && (
-          <span className="flex items-center gap-1">
-            <Code2 size={10} />
-            {project.language}
-          </span>
-        )}
-        <span className="flex items-center gap-1">
-          <Star size={10} />
-          {project.stars}
+      <div className="flex items-center justify-between font-mono text-xs text-text-mute uppercase tracking-wider">
+        <span>{project.language || "—"}</span>
+        <span className="inline-flex items-center gap-1 group-hover:text-accent-olive transition-colors">
+          GitHub <ExternalLink size={11} />
         </span>
       </div>
-
-      {/* Active indicator */}
-      <div
-        className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-500"
-        style={{ background: project.accent }}
-      />
-    </motion.a>
+    </a>
   );
 }
 
 export function Projects() {
   const [projects, setProjects] = useState<Project[]>(projectsFallback);
-  const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true });
 
   useEffect(() => {
     fetch("/api/projects")
-      .then((r) => r.ok ? r.json() : null)
+      .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data && Array.isArray(data) && data.length > 0) {
-          setProjects(data);
-        }
+        if (data && Array.isArray(data) && data.length > 0) setProjects(data);
       })
       .catch(() => {});
   }, []);
 
   return (
-    <section id="projects" className="py-24 px-6 lg:px-8" ref={ref}>
+    <section id="projects" className="py-20 px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="mb-12"
-        >
-          <p className="font-mono text-xs tracking-[0.3em] text-[var(--nebula-gold)] mb-3">03 // PROJECTS</p>
-          <h2 className="font-display text-4xl lg:text-5xl tracking-wider mb-4">LIVE SYSTEMS</h2>
-          <p className="font-body text-[var(--text-secondary)] max-w-xl">
-            Production-grade infrastructure projects. Each deployed, secured, and cost-governed.
+        <header className="border-t border-b border-border py-2 mb-10">
+          <p className="font-mono text-xs text-accent-olive tracking-widest uppercase">
+            {"// PROJECTS — BLS PORTFOLIO"}
           </p>
-        </motion.div>
+        </header>
 
-        <motion.div
-          variants={staggerContainer(0.1)}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {projects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
           ))}
-        </motion.div>
+        </div>
 
-        {/* View all */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.8 }}
-          className="mt-10 text-center"
-        >
+        <div className="mt-10">
           <a
             href="https://github.com/CalmAfterReboot"
             target="_blank"
             rel="noopener noreferrer"
             data-cursor="hover"
-            className="inline-flex items-center gap-2 font-mono text-sm text-[var(--text-muted)] hover:text-[var(--nebula-cyan)] transition-colors tracking-wider"
+            className="inline-flex items-center gap-2 font-mono text-xs text-text-mute hover:text-accent-olive transition-colors uppercase tracking-wider"
           >
-            VIEW ALL ON GITHUB
-            <ExternalLink size={12} />
+            View all on GitHub <ExternalLink size={11} />
           </a>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
