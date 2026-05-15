@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Rajdhani, JetBrains_Mono, DM_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 
@@ -12,21 +12,15 @@ const ChatWidget = dynamic(
   { ssr: false }
 );
 
-const display = Rajdhani({
+const sans = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
   display: "swap",
 });
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
-  display: "swap",
-});
-const body = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-body",
   display: "swap",
 });
 
@@ -39,19 +33,11 @@ export const metadata: Metadata = {
     template: "%s · Blue Layer Systems",
   },
   description:
-    "Cloud, Platform, and DevOps Engineering. Building observable, auditable infrastructure at scale.",
-  openGraph: {
-    title: "Mihai Gabriel Ferencz · Blue Layer Systems",
-    description: "Cloud · Platform · DevOps Engineering",
-    type: "website",
-    locale: "en_GB",
-  },
-  twitter: { card: "summary_large_image" },
-  robots: { index: true, follow: true },
+    "Senior infrastructure engineer building production tooling for cloud and DevOps adjacent roles.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#02040A",
+  themeColor: "#0a0a0b",
   width: "device-width",
   initialScale: 1,
 };
@@ -62,11 +48,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${display.variable} ${mono.variable} ${body.variable}`}
-    >
-      <body className="font-body bg-cosmos-void text-[var(--text-primary)]">
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+      <body className="font-sans bg-base text-text">
         <GalaxyCursor />
         <main className="relative z-10">{children}</main>
         <ChatWidget />

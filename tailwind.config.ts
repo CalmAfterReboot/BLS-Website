@@ -6,40 +6,50 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        display: ["var(--font-display)", "sans-serif"],
-        body:    ["var(--font-body)", "sans-serif"],
-        mono:    ["var(--font-mono)", "monospace"],
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+        // legacy aliases retained for any not-yet-migrated components
+        display: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        body:    ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       colors: {
+        // Military / tactical palette
+        base:      "#0a0a0b",
+        surface:   "#14151a",
+        "surface-2": "#1c1e26",
+        border:    "#2a2d3a",
+        text: {
+          DEFAULT: "#e6e6e1",
+          dim:     "#9b9c97",
+          mute:    "#6a6b67",
+        },
+        accent: {
+          olive:    "#7a8450",
+          "olive-dim": "#555c38",
+          amber:    "#c08a3e",
+          rust:     "#a14b3a",
+          steel:    "#4a5568",
+        },
+        status: {
+          blocker: "#a14b3a",
+          warning: "#c08a3e",
+          info:    "#4a5568",
+          ok:      "#7a8450",
+        },
+        // Legacy cosmos/nebula aliases mapped to new tokens so any
+        // not-yet-migrated components still resolve sensibly.
         cosmos: {
-          void:    "var(--cosmos-void)",
-          deep:    "var(--cosmos-deep)",
-          mid:     "var(--cosmos-mid)",
-          surface: "var(--cosmos-surface)",
+          void:    "#0a0a0b",
+          deep:    "#14151a",
+          mid:     "#1c1e26",
+          surface: "#14151a",
         },
         nebula: {
-          cyan:    "var(--nebula-cyan)",
-          violet:  "var(--nebula-violet)",
-          gold:    "var(--nebula-gold)",
-          rose:    "var(--nebula-rose)",
-          green:   "var(--nebula-green)",
-        },
-      },
-      boxShadow: {
-        "glow-cyan":   "0 0 20px rgba(0, 212, 255, 0.4), 0 0 40px rgba(0, 212, 255, 0.15)",
-        "glow-violet": "0 0 20px rgba(123, 79, 255, 0.4), 0 0 40px rgba(123, 79, 255, 0.15)",
-        "glow-gold":   "0 0 20px rgba(255, 179, 71, 0.35), 0 0 40px rgba(255, 179, 71, 0.12)",
-        "glow-rose":   "0 0 20px rgba(255, 107, 157, 0.35)",
-      },
-      animation: {
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "breathe":    "breathe 6s ease-in-out infinite",
-        "spin-slow":  "spin 20s linear infinite",
-      },
-      keyframes: {
-        breathe: {
-          "0%, 100%": { opacity: "0.6", transform: "scale(1)" },
-          "50%":      { opacity: "1",   transform: "scale(1.02)" },
+          cyan:    "#7a8450",
+          violet:  "#7a8450",
+          gold:    "#c08a3e",
+          rose:    "#a14b3a",
+          green:   "#7a8450",
         },
       },
     },
