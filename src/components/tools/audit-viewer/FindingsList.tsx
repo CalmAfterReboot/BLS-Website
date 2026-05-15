@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { Finding, HostBundle, Severity } from "@/types/audit-viewer";
 import { djb2 } from "@/lib/audit-viewer/hash";
+import { EvidenceView } from "./EvidenceView";
 
 interface Row {
   id: string;
@@ -144,9 +145,9 @@ export function FindingsList({ hosts }: { hosts: HostBundle[] }) {
                 <span className="text-sm text-text">{row.finding.Message}</span>
               </button>
               {isOpen && row.finding.Evidence !== undefined && row.finding.Evidence !== null && (
-                <pre className="font-mono text-xs bg-surface-2 text-text-dim p-3 overflow-x-auto border-t border-border">
-                  {JSON.stringify(row.finding.Evidence, null, 2)}
-                </pre>
+                <div className="bg-surface-2 p-3 border-t border-border">
+                  <EvidenceView evidence={row.finding.Evidence} />
+                </div>
               )}
             </div>
           );
