@@ -24,7 +24,6 @@ export const links = {
   githubHandle:   identity.github_handle,
   linkedin:       identity.linkedin,
   linkedinHandle: identity.linkedin_handle,
-  cvPath:         identity.cv_path,
 };
 
 export const seo = {

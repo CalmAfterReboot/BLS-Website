@@ -17,7 +17,6 @@ const NAV_ITEMS: NavItem[] = [
   { id: "projects",     label: "Projects",     href: "/#projects",     anchor: true },
   { id: "tools",        label: "Tools",        href: "/tools" },
   { id: "case-studies", label: "Case Studies", href: "/case-studies" },
-  { id: "cv",           label: "CV",           href: "/cv" },
   { id: "contact",      label: "Contact",      href: "/#contact",      anchor: true },
 ];
 

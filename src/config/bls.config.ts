@@ -27,7 +27,6 @@ export const identity = {
   linkedin_handle:  "linkedin.com/in/mihai-ferencz",
   portfolio:        "https://bluelayersystems.com",
   cal_booking:      "https://cal.com/mihai-ferencz",
-  cv_path:          "/cv",
   footer_tagline:   "Engineering infrastructure that doesn't wake you up at 3am.",
   meta_description: "Cloud, Platform and DevOps Engineer. Building observable, auditable infrastructure at scale. 5+ years IT, 3+ years MSP, 50+ client tenants.",
 };
