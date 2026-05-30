@@ -80,10 +80,10 @@ export const PLATFORMS: Platform[] = [
     slug: "gateway",
     name: "LLM Gateway",
     tagline: "OpenAI-compatible LLM routing",
-    url: "https://gateway.bluelayersystems.com",
+    url: "https://gateway.bluelayersystems.com/docs",
     access: "MFA",
     accessNote:
-      "Operator access only (email + MFA). The API is Bearer-token authenticated behind the edge — both layers required.",
+      "Operator access at the edge (email one-time-PIN). The link opens the interactive API docs (Swagger UI) — viewable without a key; the API endpoints themselves are Bearer-token protected. The root path is a 401 by design (it's an API, not a dashboard).",
     summary:
       "An OpenAI-compatible API: FastAPI at the edge, LiteLLM routing across a homelab Ollama fleet and cloud providers, Redis-backed caching, OpenTelemetry on every request.",
     detail: [
