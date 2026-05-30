@@ -15,6 +15,7 @@ const CONTENT_DIR = path.join(process.cwd(), "content", "case-studies");
 const FILE_TO_SLUG: Record<string, string> = {
   "01-incident-vpn-rds-cascade.md":           "vpn-rds-cascade",
   "02-azure-migration-discovery-methodology.md": "azure-discovery-methodology",
+  "03-school-onboarding-runbook.md":          "school-onboarding-runbook",
 };
 
 function parseMeta(file: string, raw: string): CaseStudyMeta {
