@@ -8,7 +8,6 @@ import { identity, availability, hero, certifications } from "@/config/bls.confi
 export const personalDetails = {
   name:        `${identity.full_name} Ferencz`,
   email:       identity.email,
-  phone:       identity.phone,
   location:    identity.location,
   available:   availability.open_to_work,
   workMode:    availability.work_type,

@@ -1,16 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import dynamic from "next/dynamic";
+import { ClientOverlays } from "@/components/ClientOverlays";
 import "./globals.css";
-
-const GalaxyCursor = dynamic(
-  () => import("@/components/effects/GalaxyCursor").then((m) => ({ default: m.GalaxyCursor })),
-  { ssr: false }
-);
-const ChatWidget = dynamic(
-  () => import("@/components/ui/ChatWidget").then((m) => ({ default: m.ChatWidget })),
-  { ssr: false }
-);
 
 const sans = Inter({
   subsets: ["latin"],
@@ -50,9 +41,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body className="font-sans bg-base text-text">
-        <GalaxyCursor />
         <main className="relative z-10">{children}</main>
-        <ChatWidget />
+        <ClientOverlays />
       </body>
     </html>
   );

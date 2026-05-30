@@ -7,8 +7,9 @@ export function generateStaticParams() {
   return PLATFORMS.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const platform = getPlatform(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const platform = getPlatform(slug);
   if (!platform) return { title: "Platform" };
   return { title: `${platform.name} — Platform`, description: platform.tagline };
 }
@@ -27,8 +28,9 @@ function AccessBadge({ access }: { access: PlatformAccess }) {
   );
 }
 
-export default function PlatformDetailPage({ params }: { params: { slug: string } }) {
-  const platform = getPlatform(params.slug);
+export default async function PlatformDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const platform = getPlatform(slug);
   if (!platform) notFound();
 
   const { name, tagline, url, access, accessNote, detail, tech, Icon } = platform;

@@ -66,12 +66,12 @@ export const PLATFORMS: Platform[] = [
     url: "https://guacamole.bluelayersystems.com/guacamole",
     access: "MFA",
     accessNote:
-      "Operator access only. Runs on a separate hardened host (not the k3s cluster); Guacamole authenticates every session before any machine is reachable. Never on the recruiter PIN path.",
+      "Operator access only. Runs on a separate, isolated hardened host; every session is authenticated before any target is reachable. Never on the recruiter PIN path.",
     summary:
-      "Clientless remote desktop — RDP, VNC and SSH delivered entirely in the browser, no client install. The operator's way into the homelab hosts and VMs from anywhere.",
+      "Clientless remote desktop — RDP, VNC and SSH delivered entirely in the browser, no client install. An operator-only surface behind Cloudflare Access and per-session authentication.",
     detail: [
-      "Apache Guacamole is a clientless remote-desktop gateway: RDP, VNC and SSH sessions rendered entirely in the browser, with nothing to install on the client. It's the operator's way into the homelab's Proxmox hosts and VMs from any device.",
-      "Guacamole runs on its own hardened host — deliberately separate from the k3s cluster — and is reached at guacamole.bluelayersystems.com/guacamole. Because it is a direct line into the infrastructure, every session authenticates before any machine is exposed: this is an operator surface, never on the recruiter PIN path.",
+      "Apache Guacamole is a clientless remote-desktop gateway: RDP, VNC and SSH sessions rendered entirely in the browser, with nothing to install on the client. It is an operator-only surface, never on the recruiter path.",
+      "Guacamole runs on its own hardened, isolated host, deliberately separate from the k3s cluster. Every session is gated by Cloudflare Access and authenticates before any target is reachable — defense in depth, not perimeter-only.",
     ],
     tech: ["Guacamole", "RDP", "VNC", "SSH"],
     Icon: MonitorSmartphone,

@@ -187,7 +187,6 @@ export function Contact() {
             >
               {[
                 ["LOCATION",     "Carlisle, UK"],
-                ["PHONE",        "07436 784212"],
                 ["MODE",         "Remote · Hybrid · On-site"],
                 ["RIGHT TO WORK","Full UK"],
               ].map(([k, v]) => (

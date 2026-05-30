@@ -8,14 +8,16 @@ export function generateStaticParams() {
   return listCaseStudies().map((s) => ({ slug: s.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const study = getCaseStudyBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const study = getCaseStudyBySlug(slug);
   if (!study) return { title: "Case Study Not Found" };
   return { title: study.meta.title, description: study.meta.intro };
 }
 
-export default function CaseStudyPage({ params }: { params: { slug: string } }) {
-  const study = getCaseStudyBySlug(params.slug);
+export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const study = getCaseStudyBySlug(slug);
   if (!study) notFound();
 
   // Strip the leading H1 from the body — we render it ourselves in the banner

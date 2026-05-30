@@ -6,6 +6,7 @@ import { MessageSquare, X, Send } from "lucide-react";
 import type { ChatMessage } from "@/types/chat";
 
 const WORKER_URL =
+  process.env.NEXT_PUBLIC_WORKER_URL ??
   "https://empty-fire-57ca-bls-chat-worker.ferencz-mihai9.workers.dev";
 
 const OPENING =
