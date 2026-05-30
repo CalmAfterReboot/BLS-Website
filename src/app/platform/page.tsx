@@ -1,65 +1,14 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Activity, GitBranch, Cpu, KeyRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, KeyRound } from "lucide-react";
+import { PLATFORMS, type PlatformAccess } from "@/data/platforms";
 
 export const metadata = {
   title: "Platform",
   description:
-    "Live access to the BLS platform — Grafana, ArgoCD, and the LLM Gateway — behind Cloudflare Zero Trust.",
+    "Live access to the BLS platform — Grafana, ArgoCD, Guacamole, and the LLM Gateway — behind Cloudflare Zero Trust.",
 };
 
-type Access = "PIN" | "MFA";
-
-interface Platform {
-  slug: string;
-  name: string;
-  url: string;
-  description: string;
-  access: Access;
-  accessNote: string;
-  tech: string[];
-  Icon: typeof Activity;
-}
-
-const PLATFORMS: Platform[] = [
-  {
-    slug: "grafana",
-    name: "Grafana — Observability",
-    url: "https://grafana.bluelayersystems.com",
-    description:
-      "Live dashboards over the k3s platform: the LLM-gateway tracing / logs / metrics board, with Loki (logs), Tempo (traces) and Prometheus (metrics) wired as datasources through one OpenTelemetry pipeline.",
-    access: "PIN",
-    accessNote:
-      "Open to recruiters. Enter any email at the Cloudflare challenge, receive a one-time PIN, and you're in for a 1-hour read-only session.",
-    tech: ["Grafana", "Loki", "Tempo", "Prometheus", "OpenTelemetry"],
-    Icon: Activity,
-  },
-  {
-    slug: "argocd",
-    name: "ArgoCD — GitOps Control Plane",
-    url: "https://argocd.bluelayersystems.com",
-    description:
-      "The GitOps control plane: every workload's sync/health state, the matrix ApplicationSet that fans out across the cluster, and live Git-to-cluster diffs. Read-only viewonly account behind the edge.",
-    access: "MFA",
-    accessNote:
-      "Operator access only (email + MFA, 24-hour session). The public route lands on a read-only RBAC account — no sync, no app mutation.",
-    tech: ["ArgoCD", "Helm", "GitOps", "Kubernetes"],
-    Icon: GitBranch,
-  },
-  {
-    slug: "gateway",
-    name: "LLM Gateway",
-    url: "https://gateway.bluelayersystems.com",
-    description:
-      "An OpenAI-compatible LLM gateway: FastAPI at the edge, LiteLLM routing across a homelab Ollama fleet and cloud providers, Redis-backed caching, and OpenTelemetry spans on every request.",
-    access: "MFA",
-    accessNote:
-      "Operator access only (email + MFA). The API itself is Bearer-token authenticated behind Cloudflare Access — defense in depth, both layers required.",
-    tech: ["FastAPI", "LiteLLM", "Redis", "OpenTelemetry"],
-    Icon: Cpu,
-  },
-];
-
-function AccessBadge({ access }: { access: Access }) {
+function AccessBadge({ access }: { access: PlatformAccess }) {
   const cfg =
     access === "PIN"
       ? { label: "ONE-TIME PIN", colour: "border-l-status-info text-status-info" }
@@ -94,7 +43,7 @@ export default function PlatformIndexPage() {
         <p className="text-text-dim max-w-2xl mb-6">
           The running BLS platform, exposed publicly through Cloudflare Zero Trust — no inbound
           port on the homelab, every request authenticated at the edge before it reaches the
-          cluster. Pick a surface below.
+          cluster. Open a surface to see what it is and how to get in.
         </p>
 
         {/* Access-model callout */}
@@ -108,38 +57,33 @@ export default function PlatformIndexPage() {
           <p className="text-sm text-text-dim leading-relaxed">
             Grafana is reviewer-friendly: a{" "}
             <span className="text-text">one-time PIN to any email</span>, 1-hour session, read-only.
-            ArgoCD and the gateway are operator-only (MFA). Authentication happens at Cloudflare&apos;s
-            edge first, then again at the backend — the cluster never trusts the network alone.
+            ArgoCD, Guacamole and the gateway are operator-only (MFA). Authentication happens at
+            Cloudflare&apos;s edge first, then again at the backend — the cluster never trusts the
+            network alone.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {PLATFORMS.map(({ slug, name, url, description, access, accessNote, tech, Icon }) => (
-            <a
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {PLATFORMS.map(({ slug, name, tagline, access, summary, tech, Icon }) => (
+            <Link
               key={slug}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/platform/${slug}`}
               data-cursor="hover"
               className="group flex flex-col border border-border bg-surface p-5 hover:border-accent-olive transition-colors"
             >
-              <div className="flex items-start justify-between mb-3 gap-3">
+              <div className="flex items-start justify-between mb-1 gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <Icon size={14} className="text-text-mute flex-shrink-0" />
+                  <Icon size={15} className="text-text-mute flex-shrink-0" />
                   <span className="font-sans font-medium text-text truncate">{name}</span>
                 </div>
                 <AccessBadge access={access} />
               </div>
 
-              <p className="font-mono text-[11px] text-accent-olive lowercase tracking-wide mb-3 break-all">
-                {url.replace("https://", "")}
+              <p className="font-mono text-[11px] text-text-mute lowercase tracking-wide mb-3">
+                {tagline}
               </p>
 
-              <p className="text-sm text-text-dim leading-relaxed mb-4">{description}</p>
-
-              <p className="text-xs text-text-mute leading-relaxed mb-4 border-l border-border pl-3">
-                {accessNote}
-              </p>
+              <p className="text-sm text-text-dim leading-relaxed mb-4">{summary}</p>
 
               <div className="flex flex-wrap gap-1.5 mb-4">
                 {tech.map((t) => (
@@ -153,9 +97,9 @@ export default function PlatformIndexPage() {
               </div>
 
               <span className="mt-auto inline-flex items-center gap-1 font-mono text-xs text-text-mute group-hover:text-accent-olive transition-colors uppercase tracking-wider">
-                Open <ArrowUpRight size={11} />
+                View &amp; open <ArrowRight size={11} />
               </span>
-            </a>
+            </Link>
           ))}
         </div>
 
