@@ -18,8 +18,7 @@ export const identity = {
   brand:            "Blue Layer Systems",
   brand_short:      "BLS",
   role_title:       "Cloud & DevOps Engineer",
-  email:            "mihai.ferencz@hotmail.com",
-  phone:            "07436 784212",
+  email:            "mihai.ferencz@bluelayersystems.com",
   location:         "Carlisle, UK",
   github:           "https://github.com/CalmAfterReboot",
   github_handle:    "github.com/CalmAfterReboot",
@@ -379,8 +378,8 @@ export const homelab = {
   cpu:        "6-core Xeon",
   ram_gb:     128,
   storage_tb: 4,
-  router:     "pfSense (Netgate)",
-  switch:     "TP-Link managed (802.1Q trunking)",
+  router:     "Managed firewall/router (stateful, 802.1Q-aware)",
+  switch:     "Managed switch (802.1Q VLAN trunking)",
   purpose:    "Used to validate Terraform modules, Ansible playbooks, and container networking before Azure deployment. Runs production-equivalent workloads.",
 
   vlans: [

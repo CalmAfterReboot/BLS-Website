@@ -17,7 +17,7 @@ export default function HomePage() {
       <footer className="border-t border-[var(--border-subtle)] py-8 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="font-mono text-xs text-[var(--text-muted)] tracking-widest">
-            © {new Date().getFullYear()} BLUE LAYER SYSTEMS // MIHAI GABRIEL FERENCZ
+            © {new Date().getFullYear()} Blue Layer Systems · Authored by Mihai Ferencz
           </p>
           <p className="font-mono text-xs text-[var(--text-muted)] tracking-widest">
             BLS v2.0
