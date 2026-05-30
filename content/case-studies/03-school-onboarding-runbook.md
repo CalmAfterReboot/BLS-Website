@@ -1,6 +1,6 @@
 # School Onboarding Runbook
 
-**Context:** Repeatable convergence pattern for onboarding a new school into a Multi-Academy Trust. Every school arrives with its own Active Directory, mailbox estate, network, and way of doing things — this runbook converges each one onto a single secure, observable, segmented, recoverable, cloud-authoritative pattern, so the next school onboards faster and cheaper than the last.
+**Context:** Repeatable convergence pattern for onboarding a new school into a Multi-Academy Trust — turning each inherited estate into one secure, cloud-authoritative end state.
 **Pattern:** Multi-Academy Trust — Estate Convergence (Entra-authoritative, Intune-managed, cloud-native end state)
 **Owner:** TechOps / Platform Engineering
 **Status:** Living document — v2.0, updated after every onboarding (lessons learned feed back in)
