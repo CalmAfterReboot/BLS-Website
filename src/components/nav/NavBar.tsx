@@ -15,6 +15,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { id: "projects",     label: "Projects",     href: "/#projects",     anchor: true },
+  { id: "platform",     label: "Platform",     href: "/platform" },
   { id: "tools",        label: "Tools",        href: "/tools" },
   { id: "case-studies", label: "Case Studies", href: "/case-studies" },
   { id: "contact",      label: "Contact",      href: "/#contact",      anchor: true },
