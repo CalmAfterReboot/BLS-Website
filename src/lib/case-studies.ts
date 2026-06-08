@@ -16,6 +16,7 @@ const FILE_TO_SLUG: Record<string, string> = {
   "01-incident-vpn-rds-cascade.md":           "vpn-rds-cascade",
   "02-azure-migration-discovery-methodology.md": "azure-discovery-methodology",
   "03-school-onboarding-runbook.md":          "school-onboarding-runbook",
+  "04-avd-fslogix-rebuild-entra-kerberos.md": "avd-fslogix-entra-kerberos",
 };
 
 function parseMeta(file: string, raw: string): CaseStudyMeta {
