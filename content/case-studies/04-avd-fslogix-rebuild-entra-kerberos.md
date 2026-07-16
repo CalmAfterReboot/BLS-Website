@@ -6,7 +6,6 @@
 
 **Scope of this record:** This covers the AVD session-host build, FSLogix profile storage, and the hybrid-identity authentication model — the layers this engagement turned on. The network layer is deliberately thin (a single flat NSG; access via the Windows App client — see the networking note below), and tiered segmentation is named as a hardening step, not claimed as built.
 
-**Anonymisation note:** All client, host, tenant, storage and account identifiers have been removed or generalised. The engineering is reproduced faithfully; nothing here identifies the client or their infrastructure.
 
 ---
 
