@@ -1,10 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { Finding, HostBundle, Severity } from "@/types/audit-viewer";
+import { djb2 } from "@/lib/audit-viewer/hash";
+import { EvidenceView } from "./EvidenceView";
 
 interface Row {
+  id: string;
   hostname: string;
   finding: Finding;
 }
@@ -17,6 +20,10 @@ function severityClass(s: Severity): string {
   return "border-l-status-info text-status-info";
 }
 
+function findingId(hostname: string, f: Finding): string {
+  return `${hostname}-${f.Category}-${f.Severity}-${djb2(f.Message)}`;
+}
+
 export function FindingsList({ hosts }: { hosts: HostBundle[] }) {
   const [filter, setFilter] = useState<Severity | "ALL">("ALL");
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -25,7 +32,7 @@ export function FindingsList({ hosts }: { hosts: HostBundle[] }) {
     const all: Row[] = [];
     for (const h of hosts) {
       for (const f of h.workload?.Findings || []) {
-        all.push({ hostname: h.hostname, finding: f });
+        all.push({ id: findingId(h.hostname, f), hostname: h.hostname, finding: f });
       }
     }
     all.sort((a, b) => {
@@ -38,7 +45,30 @@ export function FindingsList({ hosts }: { hosts: HostBundle[] }) {
     return all;
   }, [hosts]);
 
+  // Reset expansion when the underlying findings set changes — default state
+  // is "all collapsed" per the spec.
+  const fingerprint = useMemo(() => rows.map((r) => r.id).join("|"), [rows]);
+  useEffect(() => {
+    setOpen({});
+  }, [fingerprint]);
+
   const filtered = filter === "ALL" ? rows : rows.filter((r) => r.finding.Severity === filter);
+
+  const expandVisible = () => {
+    setOpen((prev) => {
+      const next = { ...prev };
+      for (const r of filtered) next[r.id] = true;
+      return next;
+    });
+  };
+
+  const collapseVisible = () => {
+    setOpen((prev) => {
+      const next = { ...prev };
+      for (const r of filtered) next[r.id] = false;
+      return next;
+    });
+  };
 
   if (rows.length === 0) {
     return (
@@ -66,17 +96,36 @@ export function FindingsList({ hosts }: { hosts: HostBundle[] }) {
         ))}
       </div>
 
+      <div className="flex flex-wrap gap-2 mb-3">
+        <button
+          onClick={expandVisible}
+          disabled={filtered.length === 0}
+          className="px-3 py-1 border border-border text-text-dim font-mono text-xs uppercase tracking-wider hover:border-accent-olive hover:text-accent-olive transition-colors disabled:opacity-40 disabled:pointer-events-none"
+        >
+          [ Expand all ]
+        </button>
+        <button
+          onClick={collapseVisible}
+          disabled={filtered.length === 0}
+          className="px-3 py-1 border border-border text-text-dim font-mono text-xs uppercase tracking-wider hover:border-accent-olive hover:text-accent-olive transition-colors disabled:opacity-40 disabled:pointer-events-none"
+        >
+          [ Collapse all ]
+        </button>
+        <span className="font-mono text-xs text-text-mute uppercase tracking-wider self-center ml-1">
+          {filtered.length} visible
+        </span>
+      </div>
+
       <div className="border border-border">
-        {filtered.map((row, i) => {
-          const key = `${row.hostname}-${i}`;
-          const isOpen = !!open[key];
+        {filtered.map((row) => {
+          const isOpen = !!open[row.id];
           return (
             <div
-              key={key}
+              key={row.id}
               className={`border-b border-border last:border-b-0 border-l-2 ${severityClass(row.finding.Severity)}`}
             >
               <button
-                onClick={() => setOpen((o) => ({ ...o, [key]: !o[key] }))}
+                onClick={() => setOpen((o) => ({ ...o, [row.id]: !o[row.id] }))}
                 className="w-full text-left flex items-start gap-3 px-3 py-2 hover:bg-surface transition-colors"
               >
                 {isOpen ? (
@@ -95,10 +144,10 @@ export function FindingsList({ hosts }: { hosts: HostBundle[] }) {
                 </span>
                 <span className="text-sm text-text">{row.finding.Message}</span>
               </button>
-              {isOpen && row.finding.Evidence !== undefined && (
-                <pre className="font-mono text-xs bg-surface-2 text-text-dim p-3 overflow-x-auto border-t border-border">
-                  {JSON.stringify(row.finding.Evidence, null, 2)}
-                </pre>
+              {isOpen && row.finding.Evidence !== undefined && row.finding.Evidence !== null && (
+                <div className="bg-surface-2 p-3 border-t border-border">
+                  <EvidenceView evidence={row.finding.Evidence} />
+                </div>
               )}
             </div>
           );
